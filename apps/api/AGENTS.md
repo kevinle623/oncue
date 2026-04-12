@@ -8,6 +8,22 @@
 - Services accept and return Pydantic DTOs only. DTOs live in `dtos/`.
 - Routes call services, services call repositories. No skipping layers.
 
+### Adapters Pattern
+
+Adapters decouple the application from specific third-party providers. Services depend on adapter interfaces, never on provider SDKs directly. Each adapter category has its own subdirectory with provider-specific implementations:
+
+```
+adapters/
+  db/postgresql.py         — database
+  tts/elevenlabs.py        — text-to-speech
+  stt/deepgram.py          — speech-to-text
+  llm/anthropic.py         — language model
+  telephony/twilio.py      — telephony
+  music/spotify.py         — music streaming
+```
+
+When adding a new provider, add a new file under the appropriate category (e.g. `tts/cartesia.py`). When adding a new category, create a new subdirectory with an `__init__.py`.
+
 ### Tool Architecture
 
 Tools split into two buckets:
@@ -42,7 +58,8 @@ Current stack: FastAPI, Pydantic, pydantic-settings, SQLAlchemy, Alembic, asyncp
 
 ## Config and Secrets
 
-- Never commit `.env`. All config goes through `oncue.config.settings` (pydantic-settings).
+- Never commit `.env`. All config goes through `oncue.settings.settings` (pydantic-settings `BaseSettings`).
+- Required vars have no default (pydantic fails at startup if missing). Optional vars with local defaults have a default value.
 - New env vars must be added to both `Settings` and `.env.example`.
 
 ## Webhooks
