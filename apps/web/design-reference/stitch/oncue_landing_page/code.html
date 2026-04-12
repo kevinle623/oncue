@@ -1,0 +1,328 @@
+<!DOCTYPE html>
+
+<html class="dark" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>OnCue | Everything, on cue.</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&amp;family=Inter+Tight:wght@700;800;900&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<script id="tailwind-config">
+      tailwind.config = {
+        darkMode: "class",
+        theme: {
+          extend: {
+            "colors": {
+                    "tertiary": "#dfdfde",
+                    "on-error-container": "#ffdad6",
+                    "on-surface": "#e5e2e3",
+                    "on-tertiary": "#2f3130",
+                    "inverse-primary": "#835500",
+                    "surface-bright": "#3a393a",
+                    "on-primary-fixed": "#291800",
+                    "on-primary-fixed-variant": "#633f00",
+                    "primary-fixed": "#ffddb4",
+                    "on-secondary-fixed-variant": "#5c4200",
+                    "secondary-fixed": "#ffdea2",
+                    "surface-container-low": "#1c1b1c",
+                    "on-primary": "#452b00",
+                    "primary": "#ffd9ab",
+                    "surface-container-lowest": "#0e0e0f",
+                    "outline-variant": "#514535",
+                    "surface-tint": "#ffb955",
+                    "on-tertiary-fixed-variant": "#454747",
+                    "inverse-surface": "#e5e2e3",
+                    "on-secondary-container": "#fbcf74",
+                    "tertiary-fixed": "#e2e2e2",
+                    "error-container": "#93000a",
+                    "error": "#ffb4ab",
+                    "on-secondary": "#402d00",
+                    "inverse-on-surface": "#313031",
+                    "on-tertiary-container": "#4f5150",
+                    "surface": "#131314",
+                    "background": "#131314",
+                    "on-tertiary-fixed": "#1a1c1c",
+                    "on-background": "#e5e2e3",
+                    "primary-container": "#ffb547",
+                    "on-surface-variant": "#d6c4af",
+                    "tertiary-fixed-dim": "#c6c7c6",
+                    "secondary-fixed-dim": "#ecc067",
+                    "outline": "#9e8e7c",
+                    "on-error": "#690005",
+                    "on-primary-container": "#704800",
+                    "surface-variant": "#353436",
+                    "surface-container": "#201f20",
+                    "tertiary-container": "#c3c3c2",
+                    "surface-container-highest": "#353436",
+                    "surface-container-high": "#2a2a2b",
+                    "on-secondary-fixed": "#261900",
+                    "secondary": "#ecc067",
+                    "surface-dim": "#131314",
+                    "secondary-container": "#775701",
+                    "primary-fixed-dim": "#ffb955"
+            },
+            "borderRadius": {
+                    "DEFAULT": "0.125rem",
+                    "lg": "0.25rem",
+                    "xl": "0.5rem",
+                    "full": "0.75rem"
+            },
+            "fontFamily": {
+                    "headline": ["Inter Tight"],
+                    "body": ["Inter"],
+                    "label": ["Inter"]
+            }
+          },
+        }
+      }
+    </script>
+<style>
+        body {
+            background-color: #0A0A0B;
+            color: #F5F5F4;
+            font-family: 'Inter', sans-serif;
+        }
+        .hairline {
+            border: 1px solid rgba(255, 255, 255, 0.08);
+        }
+        .radial-glow {
+            background: radial-gradient(circle at center, rgba(255, 181, 71, 0.08) 0%, rgba(10, 10, 11, 0) 70%);
+        }
+        .tight-tracking {
+            letter-spacing: -0.04em;
+        }
+        .label-spacing {
+            letter-spacing: 0.05em;
+        }
+    </style>
+<style>
+    body {
+      min-height: max(884px, 100dvh);
+    }
+  </style>
+  </head>
+<body class="selection:bg-primary-container selection:text-on-primary-fixed">
+<!-- TopAppBar -->
+<nav class="fixed top-0 w-full z-50 bg-stone-900/50 backdrop-blur-sm">
+<div class="flex justify-between items-center px-8 py-6 max-w-7xl mx-auto">
+<div class="flex items-center gap-2">
+<span class="material-symbols-outlined text-orange-400" style="font-variation-settings: 'FILL' 1;">settings_voice</span>
+<span class="text-xl font-bold tracking-tighter text-stone-100 flex items-center">
+                    OnCue
+                    <span class="w-1.5 h-1.5 rounded-full bg-orange-400 ml-1 mt-1"></span>
+</span>
+</div>
+<div class="hidden md:flex items-center gap-10">
+<a class="text-xs uppercase tracking-widest font-inter text-stone-400 hover:text-orange-300 transition-colors duration-300" href="#">How it works</a>
+<a class="text-xs uppercase tracking-widest font-inter text-stone-400 hover:text-orange-300 transition-colors duration-300" href="#">Integrations</a>
+<a class="text-xs uppercase tracking-widest font-inter text-stone-100 border border-white/10 px-5 py-2 hover:bg-white/5 transition-all duration-200" href="#">Get Started</a>
+</div>
+</div>
+</nav>
+<!-- Hero Section -->
+<section class="relative pt-40 pb-32 overflow-hidden">
+<div class="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-full h-full radial-glow pointer-events-none"></div>
+<div class="max-w-7xl mx-auto px-8 flex flex-col items-center text-center">
+<h1 class="font-headline text-6xl md:text-9xl font-black tight-tracking text-stone-100 mb-8 max-w-5xl">
+                Everything, on cue.
+            </h1>
+<p class="font-body text-lg md:text-2xl text-stone-400 max-w-2xl mb-12 leading-relaxed">
+                Call a number. Say what you want. It happens.
+            </p>
+<div class="flex flex-col md:flex-row items-center gap-8 mb-24">
+<button class="bg-primary-container text-on-primary-fixed px-8 py-4 font-bold rounded-DEFAULT hover:opacity-90 transition-opacity">
+                    Get early access
+                </button>
+<a class="text-stone-400 hover:text-stone-100 transition-colors flex items-center gap-2" href="#how">
+                    See how it works <span class="material-symbols-outlined text-sm">arrow_downward</span>
+</a>
+</div>
+<!-- iPhone Mockup Mock -->
+<div class="relative w-full max-w-4xl mx-auto mt-12 px-4">
+<div class="hairline bg-surface-container-low rounded-xl p-4 md:p-8 flex flex-col items-center">
+<div class="w-full max-w-[320px] aspect-[9/19] hairline bg-black rounded-[40px] relative overflow-hidden flex flex-col justify-between p-8">
+<div class="flex justify-between items-center text-stone-500 text-xs">
+<span>OnCue</span>
+<span>9:41</span>
+</div>
+<div class="flex flex-col items-center gap-6">
+<div class="w-20 h-20 rounded-full border-2 border-orange-400 flex items-center justify-center">
+<div class="w-16 h-16 rounded-full bg-orange-400/20 flex items-center justify-center">
+<span class="material-symbols-outlined text-orange-400 text-4xl" style="font-variation-settings: 'FILL' 1;">mic</span>
+</div>
+</div>
+<div class="text-stone-100 text-sm tracking-wide uppercase opacity-60">Connected</div>
+</div>
+<!-- Waveform Mock -->
+<div class="flex items-center justify-center gap-1 h-12">
+<div class="w-1 bg-orange-400 h-4 rounded-full"></div>
+<div class="w-1 bg-orange-400 h-8 rounded-full"></div>
+<div class="w-1 bg-orange-400 h-6 rounded-full"></div>
+<div class="w-1 bg-orange-400 h-10 rounded-full"></div>
+<div class="w-1 bg-orange-400 h-5 rounded-full"></div>
+</div>
+</div>
+<!-- Floating Text Element -->
+<div class="absolute top-1/4 right-0 md:right-12 bg-surface-container-high hairline px-6 py-4 rounded-lg shadow-2xl">
+<p class="text-orange-400 font-medium italic">"play something sad"</p>
+</div>
+<div class="absolute bottom-1/4 left-0 md:left-12 bg-surface-container-high hairline px-6 py-4 rounded-lg shadow-2xl">
+<span class="material-symbols-outlined text-stone-400 align-middle mr-2">brand_family</span>
+<span class="text-stone-300 font-medium">Ordering Uber...</span>
+</div>
+</div>
+</div>
+</div>
+</section>
+<!-- How it Works -->
+<section class="py-32 bg-surface-container-lowest" id="how">
+<div class="max-w-7xl mx-auto px-8">
+<div class="mb-24">
+<span class="text-xs uppercase tracking-widest font-inter text-orange-400 font-bold mb-4 block">Process</span>
+<h2 class="font-headline text-4xl md:text-6xl font-bold tight-tracking text-stone-100">Simple by design.</h2>
+</div>
+<div class="grid md:grid-cols-3 gap-px bg-white/10 hairline overflow-hidden rounded-lg">
+<div class="bg-surface p-12 hover:bg-surface-container-low transition-colors group">
+<span class="text-5xl font-black text-orange-400/20 mb-8 block group-hover:text-orange-400/40 transition-colors">01</span>
+<h3 class="text-2xl font-bold text-stone-100 mb-4">Call OnCue</h3>
+<p class="text-stone-500 leading-relaxed">Save our number to your speed dial. No apps to open, no screens to unlock. Just a direct line to action.</p>
+</div>
+<div class="bg-surface p-12 hover:bg-surface-container-low transition-colors group">
+<span class="text-5xl font-black text-orange-400/20 mb-8 block group-hover:text-orange-400/40 transition-colors">02</span>
+<h3 class="text-2xl font-bold text-stone-100 mb-4">Speak naturally</h3>
+<p class="text-stone-500 leading-relaxed">Describe what you need in plain English. Our LLM core understands context, intent, and nuance perfectly.</p>
+</div>
+<div class="bg-surface p-12 hover:bg-surface-container-low transition-colors group">
+<span class="text-5xl font-black text-orange-400/20 mb-8 block group-hover:text-orange-400/40 transition-colors">03</span>
+<h3 class="text-2xl font-bold text-stone-100 mb-4">It happens.</h3>
+<p class="text-stone-500 leading-relaxed">OnCue connects to your digital life to execute commands, book services, or control your environment instantly.</p>
+</div>
+</div>
+<!-- Flow Diagram -->
+<div class="mt-24 p-12 hairline rounded-lg flex flex-col md:flex-row items-center justify-between gap-12 opacity-80">
+<div class="flex items-center gap-4">
+<span class="material-symbols-outlined text-stone-400">phone_in_talk</span>
+<span class="text-stone-500">The User</span>
+</div>
+<div class="h-px bg-white/10 flex-1 hidden md:block"></div>
+<div class="flex items-center gap-4">
+<span class="material-symbols-outlined text-orange-400">psychology</span>
+<span class="text-orange-400 font-medium">Neural Engine</span>
+</div>
+<div class="h-px bg-white/10 flex-1 hidden md:block"></div>
+<div class="flex items-center gap-4">
+<span class="material-symbols-outlined text-stone-400">bolt</span>
+<span class="text-stone-500">Execution</span>
+</div>
+</div>
+</div>
+</section>
+<!-- Integrations -->
+<section class="py-32">
+<div class="max-w-7xl mx-auto px-8">
+<div class="text-center mb-24">
+<h2 class="font-headline text-4xl md:text-5xl font-bold tight-tracking text-stone-100 mb-6">Works with what you already use.</h2>
+<p class="text-stone-500 text-lg">Seamless connections to your favorite platforms.</p>
+</div>
+<div class="grid grid-cols-2 md:grid-cols-4 gap-8">
+<!-- Spotify -->
+<div class="hairline p-8 rounded-lg flex flex-col items-center justify-center gap-4 group hover:bg-surface-container-low transition-all">
+<div class="text-stone-500 group-hover:text-stone-100 transition-colors">
+<span class="material-symbols-outlined text-4xl">audio_file</span>
+</div>
+<span class="font-medium text-stone-300">Spotify</span>
+<span class="text-[10px] uppercase tracking-widest bg-orange-400/10 text-orange-400 px-2 py-1 rounded">Available now</span>
+</div>
+<!-- Apple Music -->
+<div class="hairline p-8 rounded-lg flex flex-col items-center justify-center gap-4 group grayscale opacity-50">
+<div class="text-stone-500">
+<span class="material-symbols-outlined text-4xl">music_note</span>
+</div>
+<span class="font-medium text-stone-300">Apple Music</span>
+<span class="text-[10px] uppercase tracking-widest text-stone-500">Coming soon</span>
+</div>
+<!-- Uber -->
+<div class="hairline p-8 rounded-lg flex flex-col items-center justify-center gap-4 group grayscale opacity-50">
+<div class="text-stone-500">
+<span class="material-symbols-outlined text-4xl">directions_car</span>
+</div>
+<span class="font-medium text-stone-300">Uber</span>
+<span class="text-[10px] uppercase tracking-widest text-stone-500">Coming soon</span>
+</div>
+<!-- Calendar -->
+<div class="hairline p-8 rounded-lg flex flex-col items-center justify-center gap-4 group grayscale opacity-50">
+<div class="text-stone-500">
+<span class="material-symbols-outlined text-4xl">calendar_today</span>
+</div>
+<span class="font-medium text-stone-300">Calendar</span>
+<span class="text-[10px] uppercase tracking-widest text-stone-500">Coming soon</span>
+</div>
+</div>
+</div>
+</section>
+<!-- Use Cases / Vertical Commands -->
+<section class="py-32 bg-surface">
+<div class="max-w-7xl mx-auto px-8">
+<div class="space-y-24">
+<div class="flex flex-col md:flex-row items-center justify-between gap-12 border-b border-white/5 pb-24">
+<h3 class="font-headline text-4xl md:text-7xl font-black tight-tracking text-stone-400 italic">“play something sad”</h3>
+<div class="flex items-center gap-6">
+<span class="material-symbols-outlined text-stone-500 text-3xl">trending_flat</span>
+<span class="material-symbols-outlined text-stone-100 text-5xl">audio_file</span>
+</div>
+</div>
+<div class="flex flex-col md:flex-row items-center justify-between gap-12 border-b border-white/5 pb-24">
+<h3 class="font-headline text-4xl md:text-7xl font-black tight-tracking text-stone-400 italic">“book a ride home”</h3>
+<div class="flex items-center gap-6">
+<span class="material-symbols-outlined text-stone-500 text-3xl">trending_flat</span>
+<span class="material-symbols-outlined text-stone-100 text-5xl">directions_car</span>
+</div>
+</div>
+<div class="flex flex-col md:flex-row items-center justify-between gap-12">
+<h3 class="font-headline text-4xl md:text-7xl font-black tight-tracking text-stone-400 italic">“summarize my last call”</h3>
+<div class="flex items-center gap-6">
+<span class="material-symbols-outlined text-stone-500 text-3xl">trending_flat</span>
+<span class="material-symbols-outlined text-stone-100 text-5xl">description</span>
+</div>
+</div>
+</div>
+</div>
+</section>
+<!-- Final CTA -->
+<section class="py-48 relative overflow-hidden">
+<div class="absolute inset-0 radial-glow opacity-40"></div>
+<div class="max-w-7xl mx-auto px-8 text-center relative z-10">
+<h2 class="font-headline text-6xl md:text-9xl font-black tight-tracking text-stone-100 mb-12">Drive. Talk. Done.</h2>
+<button class="bg-primary-container text-on-primary-fixed px-12 py-6 font-bold text-xl rounded-DEFAULT hover:opacity-90 transition-all transform hover:scale-105">
+                Get early access
+            </button>
+</div>
+</section>
+<!-- Footer -->
+<footer class="bg-stone-950 border-t border-white/10">
+<div class="flex flex-col md:flex-row justify-between items-center px-8 py-12 w-full max-w-7xl mx-auto">
+<div class="flex flex-col gap-4 mb-8 md:mb-0">
+<span class="text-lg font-bold text-stone-100 flex items-center">
+                    OnCue
+                    <span class="w-1.5 h-1.5 rounded-full bg-orange-400 ml-1 mt-1"></span>
+</span>
+<p class="font-inter text-stone-500 text-sm">© 2024 OnCue. The Digital Monolith.</p>
+</div>
+<div class="flex gap-8">
+<a class="text-stone-500 hover:text-stone-100 text-sm font-inter transition-colors" href="#">Privacy</a>
+<a class="text-stone-500 hover:text-stone-100 text-sm font-inter transition-colors" href="#">Terms</a>
+<a class="text-stone-500 hover:text-stone-100 text-sm font-inter transition-colors" href="#">Safety</a>
+<a class="text-stone-500 hover:text-stone-100 text-sm font-inter transition-colors" href="#">Contact</a>
+</div>
+<div class="flex gap-6 mt-8 md:mt-0">
+<a class="text-stone-500 hover:text-orange-400 transition-colors" href="#">
+<span class="material-symbols-outlined">brand_awareness</span>
+</a>
+<a class="text-stone-500 hover:text-orange-400 transition-colors" href="#">
+<span class="material-symbols-outlined">share</span>
+</a>
+</div>
+</div>
+</footer>
+</body></html>
