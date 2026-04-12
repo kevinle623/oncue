@@ -1,0 +1,59 @@
+# API Agent Rules
+
+## Architecture
+
+### Service + Repository Pattern
+
+- Repositories own all database access. SQLAlchemy model types stay strictly inside `repositories/`. Never import models from `services/`, `api/`, or anywhere else.
+- Services accept and return Pydantic DTOs only. DTOs live in `dtos/`.
+- Routes call services, services call repositories. No skipping layers.
+
+### Tool Architecture
+
+Tools split into two buckets:
+
+- **Immediate**: read-only, executed during the active call. Safe because they don't affect Spotify playback state.
+- **Deferred**: mutations (play, pause, skip, queue). Queued in Redis keyed by `CallSid`. Executed by Celery ~4s after Twilio's `call-status completed` webhook fires. Reason: the phone occupies Spotify's active device during the call, so mutations must wait until the call ends.
+
+Never execute Spotify mutations during an active call.
+
+### Style
+
+- Functional programming preferred. Classes only when required by the framework (SQLAlchemy declarative models, Pydantic `BaseModel`, Celery task classes).
+- No unnecessary OOP.
+
+## Type Safety
+
+- Type hints everywhere. This codebase targets `mypy --strict`.
+- No untyped functions, no `Any` unless genuinely unavoidable.
+
+## Async by Default
+
+- FastAPI routes: `async def`.
+- SQLAlchemy: async engine + `AsyncSession`.
+- HTTP calls: `httpx.AsyncClient`.
+- Never mix sync and async DB sessions.
+
+## Dependencies
+
+Before adding a dependency, check if the stdlib or an existing dep handles it. Prefer fewer dependencies.
+
+Current stack: FastAPI, Pydantic, pydantic-settings, SQLAlchemy, Alembic, asyncpg, Celery, Redis, httpx, Twilio, Spotipy, Deepgram SDK, ElevenLabs, Anthropic.
+
+## Config and Secrets
+
+- Never commit `.env`. All config goes through `oncue.config.settings` (pydantic-settings).
+- New env vars must be added to both `Settings` and `.env.example`.
+
+## Webhooks
+
+All Twilio webhooks must validate the `X-Twilio-Signature` header before processing.
+
+## Before Declaring Done
+
+```sh
+poetry run ruff format .
+poetry run ruff check .
+poetry run mypy src
+poetry run pytest
+```
