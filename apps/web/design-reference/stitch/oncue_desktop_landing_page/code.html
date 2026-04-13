@@ -1,270 +1,476 @@
-<!DOCTYPE html>
+<!doctype html>
 
-<html class="dark" lang="en"><head>
-<meta charset="utf-8"/>
-<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
-<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&amp;family=Inter+Tight:wght@700;800;900&amp;display=swap" rel="stylesheet"/>
-<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
-<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
-<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
-<script id="tailwind-config">
+<html class="dark" lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta content="width=device-width, initial-scale=1.0" name="viewport" />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&amp;family=Inter+Tight:wght@700;800;900&amp;display=swap"
+      rel="stylesheet"
+    />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap"
+      rel="stylesheet"
+    />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap"
+      rel="stylesheet"
+    />
+    <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+    <script id="tailwind-config">
       tailwind.config = {
         darkMode: "class",
         theme: {
           extend: {
-            "colors": {
-                    "on-error": "#690005",
-                    "on-surface-variant": "#d6c4af",
-                    "on-surface": "#e5e2e3",
-                    "surface-variant": "#353436",
-                    "on-primary-fixed": "#291800",
-                    "inverse-surface": "#e5e2e3",
-                    "on-tertiary": "#2f3130",
-                    "on-tertiary-container": "#4f5150",
-                    "on-secondary": "#402d00",
-                    "on-primary-fixed-variant": "#633f00",
-                    "surface-tint": "#ffb955",
-                    "surface-container-low": "#1c1b1c",
-                    "secondary-fixed": "#ffdea2",
-                    "inverse-on-surface": "#313031",
-                    "error-container": "#93000a",
-                    "on-secondary-fixed-variant": "#5c4200",
-                    "surface-container-lowest": "#0e0e0f",
-                    "on-tertiary-fixed-variant": "#454747",
-                    "primary-fixed": "#ffddb4",
-                    "surface-bright": "#3a393a",
-                    "primary-fixed-dim": "#ffb955",
-                    "tertiary-container": "#c3c3c2",
-                    "on-tertiary-fixed": "#1a1c1c",
-                    "surface-dim": "#131314",
-                    "secondary-container": "#775701",
-                    "background": "#131314",
-                    "tertiary": "#dfdfde",
-                    "on-primary-container": "#704800",
-                    "inverse-primary": "#835500",
-                    "surface": "#131314",
-                    "tertiary-fixed-dim": "#c6c7c6",
-                    "primary": "#ffd9ab",
-                    "on-background": "#e5e2e3",
-                    "secondary": "#ecc067",
-                    "surface-container": "#201f20",
-                    "surface-container-high": "#2a2a2b",
-                    "primary-container": "#ffb547",
-                    "on-error-container": "#ffdad6",
-                    "surface-container-highest": "#353436",
-                    "on-secondary-fixed": "#261900",
-                    "on-primary": "#452b00",
-                    "secondary-fixed-dim": "#ecc067",
-                    "outline": "#9e8e7c",
-                    "on-secondary-container": "#fbcf74",
-                    "tertiary-fixed": "#e2e2e2",
-                    "outline-variant": "#514535",
-                    "error": "#ffb4ab"
+            colors: {
+              "on-error": "#690005",
+              "on-surface-variant": "#d6c4af",
+              "on-surface": "#e5e2e3",
+              "surface-variant": "#353436",
+              "on-primary-fixed": "#291800",
+              "inverse-surface": "#e5e2e3",
+              "on-tertiary": "#2f3130",
+              "on-tertiary-container": "#4f5150",
+              "on-secondary": "#402d00",
+              "on-primary-fixed-variant": "#633f00",
+              "surface-tint": "#ffb955",
+              "surface-container-low": "#1c1b1c",
+              "secondary-fixed": "#ffdea2",
+              "inverse-on-surface": "#313031",
+              "error-container": "#93000a",
+              "on-secondary-fixed-variant": "#5c4200",
+              "surface-container-lowest": "#0e0e0f",
+              "on-tertiary-fixed-variant": "#454747",
+              "primary-fixed": "#ffddb4",
+              "surface-bright": "#3a393a",
+              "primary-fixed-dim": "#ffb955",
+              "tertiary-container": "#c3c3c2",
+              "on-tertiary-fixed": "#1a1c1c",
+              "surface-dim": "#131314",
+              "secondary-container": "#775701",
+              background: "#131314",
+              tertiary: "#dfdfde",
+              "on-primary-container": "#704800",
+              "inverse-primary": "#835500",
+              surface: "#131314",
+              "tertiary-fixed-dim": "#c6c7c6",
+              primary: "#ffd9ab",
+              "on-background": "#e5e2e3",
+              secondary: "#ecc067",
+              "surface-container": "#201f20",
+              "surface-container-high": "#2a2a2b",
+              "primary-container": "#ffb547",
+              "on-error-container": "#ffdad6",
+              "surface-container-highest": "#353436",
+              "on-secondary-fixed": "#261900",
+              "on-primary": "#452b00",
+              "secondary-fixed-dim": "#ecc067",
+              outline: "#9e8e7c",
+              "on-secondary-container": "#fbcf74",
+              "tertiary-fixed": "#e2e2e2",
+              "outline-variant": "#514535",
+              error: "#ffb4ab",
             },
-            "borderRadius": {
-                    "DEFAULT": "0.125rem",
-                    "lg": "0.25rem",
-                    "xl": "0.5rem",
-                    "full": "0.75rem"
+            borderRadius: {
+              DEFAULT: "0.125rem",
+              lg: "0.25rem",
+              xl: "0.5rem",
+              full: "0.75rem",
             },
-            "fontFamily": {
-                    "headline": ["Inter Tight", "sans-serif"],
-                    "body": ["Inter", "sans-serif"],
-                    "label": ["Inter", "sans-serif"]
-            }
+            fontFamily: {
+              headline: ["Inter Tight", "sans-serif"],
+              body: ["Inter", "sans-serif"],
+              label: ["Inter", "sans-serif"],
+            },
           },
         },
-      }
+      };
     </script>
-<style>
-        body {
-            background-color: #0A0A0B;
-            color: #F5F5F4;
-            -webkit-font-smoothing: antialiased;
-        }
-        .hairline { border: 1px solid rgba(255, 255, 255, 0.08); }
-        .hairline-hover:hover { border-color: rgba(255, 255, 255, 0.2); }
-        .radial-glow {
-            background: radial-gradient(circle at center, rgba(255, 181, 71, 0.04) 0%, rgba(10, 10, 11, 0) 70%);
-        }
+    <style>
+      body {
+        background-color: #0a0a0b;
+        color: #f5f5f4;
+        -webkit-font-smoothing: antialiased;
+      }
+      .hairline {
+        border: 1px solid rgba(255, 255, 255, 0.08);
+      }
+      .hairline-hover:hover {
+        border-color: rgba(255, 255, 255, 0.2);
+      }
+      .radial-glow {
+        background: radial-gradient(
+          circle at center,
+          rgba(255, 181, 71, 0.04) 0%,
+          rgba(10, 10, 11, 0) 70%
+        );
+      }
     </style>
-</head>
-<body class="font-body selection:bg-primary-container selection:text-on-primary-fixed">
-<!-- Top Navigation Shell -->
-<nav class="fixed top-0 w-full z-50 bg-transparent backdrop-blur-md">
-<div class="max-w-7xl mx-auto px-8 py-6 flex justify-between items-center">
-<div class="text-xl font-black tracking-tighter text-amber-500 uppercase">OnCue</div>
-<div class="hidden md:flex gap-12 items-center">
-<a class="text-amber-500 font-bold font-['Inter_Tight'] tracking-tighter hover:text-amber-400 transition-colors duration-300" href="#">Features</a>
-<a class="text-zinc-400 font-medium font-['Inter_Tight'] tracking-tighter hover:text-amber-400 transition-colors duration-300" href="#">Technology</a>
-<a class="text-zinc-400 font-medium font-['Inter_Tight'] tracking-tighter hover:text-amber-400 transition-colors duration-300" href="#">Pricing</a>
-<a class="text-zinc-400 font-medium font-['Inter_Tight'] tracking-tighter hover:text-amber-400 transition-colors duration-300" href="#">Showcase</a>
-</div>
-<button class="bg-primary-container text-on-primary-fixed px-6 py-2 font-bold transition-transform active:scale-95 text-sm uppercase tracking-wider">
-                Get Started
-            </button>
-</div>
-</nav>
-<main class="pt-32">
-<!-- Hero Section -->
-<section class="relative max-w-7xl mx-auto px-8 py-20 overflow-hidden">
-<div class="absolute inset-0 radial-glow -z-10"></div>
-<div class="grid lg:grid-cols-2 gap-16 items-center">
-<div class="space-y-8">
-<div class="flex items-center gap-3">
-<div class="w-1.5 h-1.5 bg-primary rounded-full animate-pulse"></div>
-<span class="font-label text-xs tracking-[0.2em] text-on-surface-variant uppercase">Beta now live</span>
-</div>
-<h1 class="font-headline text-7xl md:text-8xl font-black tracking-[-0.04em] leading-[0.9] text-on-surface">
-                        Everything,<br/>on cue.
-                    </h1>
-<p class="text-lg text-on-surface-variant max-w-md leading-relaxed">
-                        The definitive voice interface for drivers. Connect your digital life to your dashboard without lifting a finger or taking your eyes off the asphalt.
-                    </p>
-<div class="flex gap-4 pt-4">
-<button class="bg-primary-container text-on-primary-fixed px-8 py-4 font-bold uppercase tracking-wider transition-all hover:brightness-110">
-                            Get early access
-                        </button>
-<button class="hairline hairline-hover px-8 py-4 font-bold uppercase tracking-wider transition-all">
-                            View Demo
-                        </button>
-</div>
-</div>
-<div class="relative flex justify-center lg:justify-end">
-<div class="relative w-full max-w-[340px] aspect-[9/18.5] bg-surface-container-lowest rounded-[3rem] p-4 hairline">
-<div class="absolute inset-x-0 top-0 h-10 bg-surface-container-lowest z-10 rounded-t-[3rem]"></div>
-<div class="w-full h-full bg-zinc-950 rounded-[2.2rem] overflow-hidden relative flex flex-col items-center justify-center">
-<div class="absolute top-12 left-1/2 -translate-x-1/2 w-20 h-6 bg-black rounded-full z-20"></div>
-<img class="absolute inset-0 w-full h-full object-cover opacity-60" data-alt="Abstract colorful light waves representing a digital audio waveform on a dark smartphone screen" src="https://lh3.googleusercontent.com/aida-public/AB6AXuCW1aNt6hwOCmCl3uBDsToCJF5iiW9v_4BKJXcHBXwyk04W7yFqP4o-NSeWWh-Y2EiKr0i70cUHABLAVuICdT5fqqwxLVMnAJnstM7XCo6Xhz7Ik-DOfFzgZ6PLgM8SloL9ZkIlZM9Es-j9cRcebyTlTmlIuEtHeDuheKbuAV5m3ukWFE1NloGgBZdsDITPtPv4L9oMYAOrzyTyk6obXz9_D0a507YJokYoSxfOg9pGyNr-vwxZQYe0avOslqNxSlgNOJipts2pQ1iX"/>
-<div class="relative z-10 flex flex-col items-center gap-4">
-<div class="flex gap-1 items-end h-12">
-<div class="w-1 bg-primary h-4 rounded-full"></div>
-<div class="w-1 bg-primary h-8 rounded-full"></div>
-<div class="w-1 bg-primary h-12 rounded-full"></div>
-<div class="w-1 bg-primary h-6 rounded-full"></div>
-<div class="w-1 bg-primary h-10 rounded-full"></div>
-</div>
-<span class="font-label text-[10px] tracking-widest text-primary uppercase">Listening...</span>
-</div>
-</div>
-</div>
-</div>
-</div>
-</section>
-<!-- How it Works -->
-<section class="bg-surface-container-low py-32">
-<div class="max-w-7xl mx-auto px-8">
-<div class="mb-20 space-y-4">
-<h2 class="font-label text-xs tracking-[0.2em] text-primary uppercase">Protocol</h2>
-<h3 class="font-headline text-5xl font-black tracking-tight">Intelligence in motion.</h3>
-</div>
-<div class="grid md:grid-cols-3 gap-1px bg-white/5">
-<div class="bg-surface-container-low p-12 space-y-6">
-<span class="font-headline text-6xl font-black text-white/5">01</span>
-<h4 class="font-headline text-xl font-bold uppercase tracking-tight">Connect</h4>
-<p class="text-on-surface-variant leading-relaxed">Bridge your smartphone via Bluetooth. OnCue automatically syncs with your ecosystem the moment you start the ignition.</p>
-</div>
-<div class="bg-surface-container-low p-12 space-y-6 border-x border-white/5">
-<span class="font-headline text-6xl font-black text-white/5">02</span>
-<h4 class="font-headline text-xl font-bold uppercase tracking-tight">Voice-Only</h4>
-<p class="text-on-surface-variant leading-relaxed">No screens to touch. Our neural engine filters out road noise to catch every nuance of your natural speech pattern.</p>
-</div>
-<div class="bg-surface-container-low p-12 space-y-6">
-<span class="font-headline text-6xl font-black text-white/5">03</span>
-<h4 class="font-headline text-xl font-bold uppercase tracking-tight">Execute</h4>
-<p class="text-on-surface-variant leading-relaxed">From messaging to navigation and smart home control. Everything happens instantly, on your command.</p>
-</div>
-</div>
-</div>
-</section>
-<!-- Use Cases / Quoted Commands -->
-<section class="max-w-7xl mx-auto px-8 py-32 space-y-32">
-<div class="flex flex-col md:flex-row items-center gap-16">
-<div class="flex-1 space-y-8">
-<div class="p-4 bg-surface-container-high w-fit rounded-lg hairline">
-<span class="material-symbols-outlined text-primary text-3xl">music_note</span>
-</div>
-<blockquote class="font-headline text-4xl md:text-5xl font-extrabold tracking-tight leading-tight text-on-surface">
-                        "Shuffle my late night drive playlist and set volume to 40%."
-                    </blockquote>
-<p class="text-on-surface-variant font-label text-sm tracking-widest uppercase">Works with Spotify &amp; Apple Music</p>
-</div>
-<div class="flex-1 w-full aspect-video rounded-xl overflow-hidden hairline">
-<img class="w-full h-full object-cover grayscale hover:grayscale-0 transition-all duration-700" data-alt="Interior of a luxury modern car at night with illuminated dashboard and bokeh city lights in the background" src="https://lh3.googleusercontent.com/aida-public/AB6AXuCsESAQfcXI2SQDa-P9iMn2k2Zik-IScXVVZmTjUpM-WU60xrn7Edvisnd38gF7ix_HNHL5AIgG3nGMcWtiaChbm0LzODp6oaWLgUIDD4Set3syO7ggSUrSF1TSwEqchcDyEJoK65j7Q9W-76L2gc7eVr9A8dKMSkyM6FVwjQYRgKLpZwg0tpY3TYct_2m7koOrztvljNYdCHLFeoin5v39CcgJrZepuWgyIsnXa8Ar5hGIYwN16jPXdWEL-gaZqp5jOYNg1oyn08FF"/>
-</div>
-</div>
-<div class="flex flex-col md:flex-row-reverse items-center gap-16">
-<div class="flex-1 space-y-8 text-right md:text-left">
-<div class="p-4 bg-surface-container-high w-fit rounded-lg hairline ml-auto md:ml-0">
-<span class="material-symbols-outlined text-primary text-3xl">home</span>
-</div>
-<blockquote class="font-headline text-4xl md:text-5xl font-extrabold tracking-tight leading-tight text-on-surface">
-                        "Turn on the driveway lights and preheat the oven to 400."
-                    </blockquote>
-<p class="text-on-surface-variant font-label text-sm tracking-widest uppercase">Connected to HomeKit &amp; Google Home</p>
-</div>
-<div class="flex-1 w-full aspect-video rounded-xl overflow-hidden hairline">
-<img class="w-full h-full object-cover grayscale hover:grayscale-0 transition-all duration-700" data-alt="Minimalist modern house exterior at dusk with warm interior lighting glowing through large glass windows" src="https://lh3.googleusercontent.com/aida-public/AB6AXuD6mnY_OVHBGxoIQ0eaZZLSrgbGKNWzCWTUlAppF-ifL-Tw0QRrhXULrKVicqD-cq-vvsGM0--ISY7NNTUfD7_D31BetX7NPe_-aGDqa6aLTbO1NR-I6iHotzUn1VvQan6qDJWZ3dZZ1__9qgURX9uEglGyZ5_d1X6sM20ZoMFu3qoc7j-Q8n76qkZblU1FVd3gU-foX-Wag9tBb0uOQwK7sh9p-9Pf-bHKkLTipofjAZ5puMcKKCccngHnv2IZO1N5mQy_AaBB8oU6"/>
-</div>
-</div>
-</section>
-<!-- Integrations Grid -->
-<section class="bg-surface-container-lowest py-32">
-<div class="max-w-7xl mx-auto px-8 text-center">
-<h3 class="font-label text-xs tracking-[0.2em] text-on-surface-variant uppercase mb-16">Deeply Integrated With</h3>
-<div class="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-6 gap-8 opacity-40 grayscale">
-<div class="flex items-center justify-center p-8 hairline rounded-lg">
-<span class="font-headline font-black text-xl">SPOTIFY</span>
-</div>
-<div class="flex items-center justify-center p-8 hairline rounded-lg">
-<span class="font-headline font-black text-xl">WHATSAPP</span>
-</div>
-<div class="flex items-center justify-center p-8 hairline rounded-lg">
-<span class="font-headline font-black text-xl">WLAZE</span>
-</div>
-<div class="flex items-center justify-center p-8 hairline rounded-lg">
-<span class="font-headline font-black text-xl">CALENDAR</span>
-</div>
-<div class="flex items-center justify-center p-8 hairline rounded-lg">
-<span class="font-headline font-black text-xl">NOTION</span>
-</div>
-<div class="flex items-center justify-center p-8 hairline rounded-lg">
-<span class="font-headline font-black text-xl">TEAMS</span>
-</div>
-</div>
-</div>
-</section>
-<!-- Final CTA -->
-<section class="max-w-7xl mx-auto px-8 py-48 text-center relative overflow-hidden">
-<div class="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[800px] h-[800px] radial-glow opacity-30 -z-10"></div>
-<h2 class="font-headline text-7xl md:text-9xl font-black tracking-[-0.05em] mb-12">Drive. Talk. Done.</h2>
-<p class="text-xl text-on-surface-variant mb-12 max-w-xl mx-auto leading-relaxed">
-                Join the waitlist for the most sophisticated voice assistant ever built for the road. Early access slots opening monthly.
+  </head>
+  <body
+    class="font-body selection:bg-primary-container selection:text-on-primary-fixed"
+  >
+    <!-- Top Navigation Shell -->
+    <nav class="fixed top-0 z-50 w-full bg-transparent backdrop-blur-md">
+      <div
+        class="mx-auto flex max-w-7xl items-center justify-between px-8 py-6"
+      >
+        <div
+          class="text-xl font-black tracking-tighter text-amber-500 uppercase"
+        >
+          OnCue
+        </div>
+        <div class="hidden items-center gap-12 md:flex">
+          <a
+            class="font-['Inter_Tight'] font-bold tracking-tighter text-amber-500 transition-colors duration-300 hover:text-amber-400"
+            href="#"
+            >Features</a
+          >
+          <a
+            class="font-['Inter_Tight'] font-medium tracking-tighter text-zinc-400 transition-colors duration-300 hover:text-amber-400"
+            href="#"
+            >Technology</a
+          >
+          <a
+            class="font-['Inter_Tight'] font-medium tracking-tighter text-zinc-400 transition-colors duration-300 hover:text-amber-400"
+            href="#"
+            >Pricing</a
+          >
+          <a
+            class="font-['Inter_Tight'] font-medium tracking-tighter text-zinc-400 transition-colors duration-300 hover:text-amber-400"
+            href="#"
+            >Showcase</a
+          >
+        </div>
+        <button
+          class="bg-primary-container text-on-primary-fixed px-6 py-2 text-sm font-bold tracking-wider uppercase transition-transform active:scale-95"
+        >
+          Get Started
+        </button>
+      </div>
+    </nav>
+    <main class="pt-32">
+      <!-- Hero Section -->
+      <section class="relative mx-auto max-w-7xl overflow-hidden px-8 py-20">
+        <div class="radial-glow absolute inset-0 -z-10"></div>
+        <div class="grid items-center gap-16 lg:grid-cols-2">
+          <div class="space-y-8">
+            <div class="flex items-center gap-3">
+              <div
+                class="bg-primary h-1.5 w-1.5 animate-pulse rounded-full"
+              ></div>
+              <span
+                class="font-label text-on-surface-variant text-xs tracking-[0.2em] uppercase"
+                >Beta now live</span
+              >
+            </div>
+            <h1
+              class="font-headline text-on-surface text-7xl leading-[0.9] font-black tracking-[-0.04em] md:text-8xl"
+            >
+              Everything,<br />on cue.
+            </h1>
+            <p class="text-on-surface-variant max-w-md text-lg leading-relaxed">
+              The definitive voice interface for drivers. Connect your digital
+              life to your dashboard without lifting a finger or taking your
+              eyes off the asphalt.
             </p>
-<div class="flex flex-col md:flex-row items-center justify-center gap-6">
-<input class="w-full md:w-80 bg-surface-container-low border-white/5 px-6 py-4 font-label text-xs tracking-widest focus:ring-primary focus:border-primary" placeholder="ENTER YOUR EMAIL" type="email"/>
-<button class="w-full md:w-auto bg-primary-container text-on-primary-fixed px-12 py-4 font-bold uppercase tracking-widest hover:scale-105 transition-transform">
-                    Reserve Access
-                </button>
-</div>
-</section>
-</main>
-<!-- Footer -->
-<footer class="w-full border-t border-white/5 bg-zinc-950">
-<div class="max-w-7xl mx-auto px-8 py-12 flex flex-col md:flex-row justify-between items-center gap-8">
-<div class="space-y-4">
-<div class="text-lg font-bold text-amber-500 uppercase tracking-tighter">OnCue</div>
-<p class="font-['Inter'] text-sm tracking-normal text-zinc-500 max-w-xs">
-                    © 2024 OnCue Digital Monolith. All rights reserved. Precision software for the automotive age.
-                </p>
-</div>
-<div class="flex flex-wrap justify-center gap-8">
-<a class="font-['Inter'] text-sm tracking-normal text-zinc-500 hover:text-zinc-200 transition-colors opacity-80 hover:opacity-100" href="#">Privacy Policy</a>
-<a class="font-['Inter'] text-sm tracking-normal text-zinc-500 hover:text-zinc-200 transition-colors opacity-80 hover:opacity-100" href="#">Terms of Service</a>
-<a class="font-['Inter'] text-sm tracking-normal text-zinc-500 hover:text-zinc-200 transition-colors opacity-80 hover:opacity-100" href="#">Twitter</a>
-<a class="font-['Inter'] text-sm tracking-normal text-zinc-500 hover:text-zinc-200 transition-colors opacity-80 hover:opacity-100" href="#">GitHub</a>
-<a class="font-['Inter'] text-sm tracking-normal text-zinc-500 hover:text-zinc-200 transition-colors opacity-80 hover:opacity-100" href="#">Documentation</a>
-</div>
-</div>
-</footer>
-</body></html>
+            <div class="flex gap-4 pt-4">
+              <button
+                class="bg-primary-container text-on-primary-fixed px-8 py-4 font-bold tracking-wider uppercase transition-all hover:brightness-110"
+              >
+                Get early access
+              </button>
+              <button
+                class="hairline hairline-hover px-8 py-4 font-bold tracking-wider uppercase transition-all"
+              >
+                View Demo
+              </button>
+            </div>
+          </div>
+          <div class="relative flex justify-center lg:justify-end">
+            <div
+              class="bg-surface-container-lowest hairline relative aspect-[9/18.5] w-full max-w-[340px] rounded-[3rem] p-4"
+            >
+              <div
+                class="bg-surface-container-lowest absolute inset-x-0 top-0 z-10 h-10 rounded-t-[3rem]"
+              ></div>
+              <div
+                class="relative flex h-full w-full flex-col items-center justify-center overflow-hidden rounded-[2.2rem] bg-zinc-950"
+              >
+                <div
+                  class="absolute top-12 left-1/2 z-20 h-6 w-20 -translate-x-1/2 rounded-full bg-black"
+                ></div>
+                <img
+                  class="absolute inset-0 h-full w-full object-cover opacity-60"
+                  data-alt="Abstract colorful light waves representing a digital audio waveform on a dark smartphone screen"
+                  src="https://lh3.googleusercontent.com/aida-public/AB6AXuCW1aNt6hwOCmCl3uBDsToCJF5iiW9v_4BKJXcHBXwyk04W7yFqP4o-NSeWWh-Y2EiKr0i70cUHABLAVuICdT5fqqwxLVMnAJnstM7XCo6Xhz7Ik-DOfFzgZ6PLgM8SloL9ZkIlZM9Es-j9cRcebyTlTmlIuEtHeDuheKbuAV5m3ukWFE1NloGgBZdsDITPtPv4L9oMYAOrzyTyk6obXz9_D0a507YJokYoSxfOg9pGyNr-vwxZQYe0avOslqNxSlgNOJipts2pQ1iX"
+                />
+                <div class="relative z-10 flex flex-col items-center gap-4">
+                  <div class="flex h-12 items-end gap-1">
+                    <div class="bg-primary h-4 w-1 rounded-full"></div>
+                    <div class="bg-primary h-8 w-1 rounded-full"></div>
+                    <div class="bg-primary h-12 w-1 rounded-full"></div>
+                    <div class="bg-primary h-6 w-1 rounded-full"></div>
+                    <div class="bg-primary h-10 w-1 rounded-full"></div>
+                  </div>
+                  <span
+                    class="font-label text-primary text-[10px] tracking-widest uppercase"
+                    >Listening...</span
+                  >
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+      <!-- How it Works -->
+      <section class="bg-surface-container-low py-32">
+        <div class="mx-auto max-w-7xl px-8">
+          <div class="mb-20 space-y-4">
+            <h2
+              class="font-label text-primary text-xs tracking-[0.2em] uppercase"
+            >
+              Protocol
+            </h2>
+            <h3 class="font-headline text-5xl font-black tracking-tight">
+              Intelligence in motion.
+            </h3>
+          </div>
+          <div class="gap-1px grid bg-white/5 md:grid-cols-3">
+            <div class="bg-surface-container-low space-y-6 p-12">
+              <span class="font-headline text-6xl font-black text-white/5"
+                >01</span
+              >
+              <h4
+                class="font-headline text-xl font-bold tracking-tight uppercase"
+              >
+                Connect
+              </h4>
+              <p class="text-on-surface-variant leading-relaxed">
+                Bridge your smartphone via Bluetooth. OnCue automatically syncs
+                with your ecosystem the moment you start the ignition.
+              </p>
+            </div>
+            <div
+              class="bg-surface-container-low space-y-6 border-x border-white/5 p-12"
+            >
+              <span class="font-headline text-6xl font-black text-white/5"
+                >02</span
+              >
+              <h4
+                class="font-headline text-xl font-bold tracking-tight uppercase"
+              >
+                Voice-Only
+              </h4>
+              <p class="text-on-surface-variant leading-relaxed">
+                No screens to touch. Our neural engine filters out road noise to
+                catch every nuance of your natural speech pattern.
+              </p>
+            </div>
+            <div class="bg-surface-container-low space-y-6 p-12">
+              <span class="font-headline text-6xl font-black text-white/5"
+                >03</span
+              >
+              <h4
+                class="font-headline text-xl font-bold tracking-tight uppercase"
+              >
+                Execute
+              </h4>
+              <p class="text-on-surface-variant leading-relaxed">
+                From messaging to navigation and smart home control. Everything
+                happens instantly, on your command.
+              </p>
+            </div>
+          </div>
+        </div>
+      </section>
+      <!-- Use Cases / Quoted Commands -->
+      <section class="mx-auto max-w-7xl space-y-32 px-8 py-32">
+        <div class="flex flex-col items-center gap-16 md:flex-row">
+          <div class="flex-1 space-y-8">
+            <div
+              class="bg-surface-container-high hairline w-fit rounded-lg p-4"
+            >
+              <span class="material-symbols-outlined text-primary text-3xl"
+                >music_note</span
+              >
+            </div>
+            <blockquote
+              class="font-headline text-on-surface text-4xl leading-tight font-extrabold tracking-tight md:text-5xl"
+            >
+              "Shuffle my late night drive playlist and set volume to 40%."
+            </blockquote>
+            <p
+              class="text-on-surface-variant font-label text-sm tracking-widest uppercase"
+            >
+              Works with Spotify &amp; Apple Music
+            </p>
+          </div>
+          <div
+            class="hairline aspect-video w-full flex-1 overflow-hidden rounded-xl"
+          >
+            <img
+              class="h-full w-full object-cover grayscale transition-all duration-700 hover:grayscale-0"
+              data-alt="Interior of a luxury modern car at night with illuminated dashboard and bokeh city lights in the background"
+              src="https://lh3.googleusercontent.com/aida-public/AB6AXuCsESAQfcXI2SQDa-P9iMn2k2Zik-IScXVVZmTjUpM-WU60xrn7Edvisnd38gF7ix_HNHL5AIgG3nGMcWtiaChbm0LzODp6oaWLgUIDD4Set3syO7ggSUrSF1TSwEqchcDyEJoK65j7Q9W-76L2gc7eVr9A8dKMSkyM6FVwjQYRgKLpZwg0tpY3TYct_2m7koOrztvljNYdCHLFeoin5v39CcgJrZepuWgyIsnXa8Ar5hGIYwN16jPXdWEL-gaZqp5jOYNg1oyn08FF"
+            />
+          </div>
+        </div>
+        <div class="flex flex-col items-center gap-16 md:flex-row-reverse">
+          <div class="flex-1 space-y-8 text-right md:text-left">
+            <div
+              class="bg-surface-container-high hairline ml-auto w-fit rounded-lg p-4 md:ml-0"
+            >
+              <span class="material-symbols-outlined text-primary text-3xl"
+                >home</span
+              >
+            </div>
+            <blockquote
+              class="font-headline text-on-surface text-4xl leading-tight font-extrabold tracking-tight md:text-5xl"
+            >
+              "Turn on the driveway lights and preheat the oven to 400."
+            </blockquote>
+            <p
+              class="text-on-surface-variant font-label text-sm tracking-widest uppercase"
+            >
+              Connected to HomeKit &amp; Google Home
+            </p>
+          </div>
+          <div
+            class="hairline aspect-video w-full flex-1 overflow-hidden rounded-xl"
+          >
+            <img
+              class="h-full w-full object-cover grayscale transition-all duration-700 hover:grayscale-0"
+              data-alt="Minimalist modern house exterior at dusk with warm interior lighting glowing through large glass windows"
+              src="https://lh3.googleusercontent.com/aida-public/AB6AXuD6mnY_OVHBGxoIQ0eaZZLSrgbGKNWzCWTUlAppF-ifL-Tw0QRrhXULrKVicqD-cq-vvsGM0--ISY7NNTUfD7_D31BetX7NPe_-aGDqa6aLTbO1NR-I6iHotzUn1VvQan6qDJWZ3dZZ1__9qgURX9uEglGyZ5_d1X6sM20ZoMFu3qoc7j-Q8n76qkZblU1FVd3gU-foX-Wag9tBb0uOQwK7sh9p-9Pf-bHKkLTipofjAZ5puMcKKCccngHnv2IZO1N5mQy_AaBB8oU6"
+            />
+          </div>
+        </div>
+      </section>
+      <!-- Integrations Grid -->
+      <section class="bg-surface-container-lowest py-32">
+        <div class="mx-auto max-w-7xl px-8 text-center">
+          <h3
+            class="font-label text-on-surface-variant mb-16 text-xs tracking-[0.2em] uppercase"
+          >
+            Deeply Integrated With
+          </h3>
+          <div
+            class="grid grid-cols-2 gap-8 opacity-40 grayscale md:grid-cols-4 lg:grid-cols-6"
+          >
+            <div
+              class="hairline flex items-center justify-center rounded-lg p-8"
+            >
+              <span class="font-headline text-xl font-black">SPOTIFY</span>
+            </div>
+            <div
+              class="hairline flex items-center justify-center rounded-lg p-8"
+            >
+              <span class="font-headline text-xl font-black">WHATSAPP</span>
+            </div>
+            <div
+              class="hairline flex items-center justify-center rounded-lg p-8"
+            >
+              <span class="font-headline text-xl font-black">WLAZE</span>
+            </div>
+            <div
+              class="hairline flex items-center justify-center rounded-lg p-8"
+            >
+              <span class="font-headline text-xl font-black">CALENDAR</span>
+            </div>
+            <div
+              class="hairline flex items-center justify-center rounded-lg p-8"
+            >
+              <span class="font-headline text-xl font-black">NOTION</span>
+            </div>
+            <div
+              class="hairline flex items-center justify-center rounded-lg p-8"
+            >
+              <span class="font-headline text-xl font-black">TEAMS</span>
+            </div>
+          </div>
+        </div>
+      </section>
+      <!-- Final CTA -->
+      <section
+        class="relative mx-auto max-w-7xl overflow-hidden px-8 py-48 text-center"
+      >
+        <div
+          class="radial-glow absolute top-1/2 left-1/2 -z-10 h-[800px] w-[800px] -translate-x-1/2 -translate-y-1/2 opacity-30"
+        ></div>
+        <h2
+          class="font-headline mb-12 text-7xl font-black tracking-[-0.05em] md:text-9xl"
+        >
+          Drive. Talk. Done.
+        </h2>
+        <p
+          class="text-on-surface-variant mx-auto mb-12 max-w-xl text-xl leading-relaxed"
+        >
+          Join the waitlist for the most sophisticated voice assistant ever
+          built for the road. Early access slots opening monthly.
+        </p>
+        <div
+          class="flex flex-col items-center justify-center gap-6 md:flex-row"
+        >
+          <input
+            class="bg-surface-container-low font-label focus:ring-primary focus:border-primary w-full border-white/5 px-6 py-4 text-xs tracking-widest md:w-80"
+            placeholder="ENTER YOUR EMAIL"
+            type="email"
+          />
+          <button
+            class="bg-primary-container text-on-primary-fixed w-full px-12 py-4 font-bold tracking-widest uppercase transition-transform hover:scale-105 md:w-auto"
+          >
+            Reserve Access
+          </button>
+        </div>
+      </section>
+    </main>
+    <!-- Footer -->
+    <footer class="w-full border-t border-white/5 bg-zinc-950">
+      <div
+        class="mx-auto flex max-w-7xl flex-col items-center justify-between gap-8 px-8 py-12 md:flex-row"
+      >
+        <div class="space-y-4">
+          <div
+            class="text-lg font-bold tracking-tighter text-amber-500 uppercase"
+          >
+            OnCue
+          </div>
+          <p
+            class="max-w-xs font-['Inter'] text-sm tracking-normal text-zinc-500"
+          >
+            © 2024 OnCue Digital Monolith. All rights reserved. Precision
+            software for the automotive age.
+          </p>
+        </div>
+        <div class="flex flex-wrap justify-center gap-8">
+          <a
+            class="font-['Inter'] text-sm tracking-normal text-zinc-500 opacity-80 transition-colors hover:text-zinc-200 hover:opacity-100"
+            href="#"
+            >Privacy Policy</a
+          >
+          <a
+            class="font-['Inter'] text-sm tracking-normal text-zinc-500 opacity-80 transition-colors hover:text-zinc-200 hover:opacity-100"
+            href="#"
+            >Terms of Service</a
+          >
+          <a
+            class="font-['Inter'] text-sm tracking-normal text-zinc-500 opacity-80 transition-colors hover:text-zinc-200 hover:opacity-100"
+            href="#"
+            >Twitter</a
+          >
+          <a
+            class="font-['Inter'] text-sm tracking-normal text-zinc-500 opacity-80 transition-colors hover:text-zinc-200 hover:opacity-100"
+            href="#"
+            >GitHub</a
+          >
+          <a
+            class="font-['Inter'] text-sm tracking-normal text-zinc-500 opacity-80 transition-colors hover:text-zinc-200 hover:opacity-100"
+            href="#"
+            >Documentation</a
+          >
+        </div>
+      </div>
+    </footer>
+  </body>
+</html>
