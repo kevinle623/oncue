@@ -78,6 +78,9 @@
     @apply font-sans;
     scroll-behavior: smooth;
   }
+  section[id] {
+    scroll-margin-top: 5rem;
+  }
   button,
   [role="button"],
   a {
@@ -86,6 +89,27 @@
   ::selection {
     background-color: var(--accent);
     color: var(--accent-foreground);
+  }
+}
+
+@layer components {
+  .prose-doc h2 {
+    @apply font-heading mt-12 text-2xl font-bold tracking-tight md:text-3xl;
+  }
+  .prose-doc h3 {
+    @apply font-heading mt-8 text-lg font-bold tracking-tight;
+  }
+  .prose-doc p {
+    @apply text-muted-foreground;
+  }
+  .prose-doc ul {
+    @apply text-muted-foreground list-disc space-y-2 pl-6;
+  }
+  .prose-doc a {
+    @apply text-accent underline-offset-4 hover:underline;
+  }
+  .prose-doc code {
+    @apply bg-surface-low rounded px-1.5 py-0.5 font-mono text-sm;
   }
 }
 

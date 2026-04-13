@@ -16,7 +16,9 @@ export function FinalCta() {
           built for the road. Early access slots opening monthly.
         </p>
         <div className="mt-10 flex justify-center">
-          <CtaButton className="px-12 py-5 text-sm">Get early access</CtaButton>
+          <CtaButton disabled className="px-12 py-5 text-sm">
+            Get early access
+          </CtaButton>
         </div>
       </Container>
     </Section>

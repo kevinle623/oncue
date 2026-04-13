@@ -4,7 +4,7 @@ import { Eyebrow } from "@/components/common/eyebrow";
 import { RadialGlow } from "@/components/common/radial-glow";
 import { Section } from "@/components/common/section";
 import { StatusDot } from "@/components/common/status-dot";
-import { HeroPhone } from "@/components/illustrations/hero-phone";
+import { HeroVisual } from "@/components/illustrations/hero-visual";
 
 export function Hero() {
   return (
@@ -15,7 +15,7 @@ export function Hero() {
           <div className="space-y-8">
             <div className="flex items-center gap-3">
               <StatusDot pulse />
-              <Eyebrow>Beta now live</Eyebrow>
+              <Eyebrow>Building in public</Eyebrow>
             </div>
             <h1 className="font-heading text-5xl leading-[0.9] font-black tracking-[-0.04em] md:text-7xl lg:text-[7rem]">
               Everything,
@@ -28,15 +28,13 @@ export function Hero() {
               eyes off the asphalt.
             </p>
             <div className="flex flex-col gap-4 pt-2 sm:flex-row">
-              <CtaButton>Get early access</CtaButton>
+              <CtaButton disabled>Get early access</CtaButton>
               <CtaButton variant="outline" href="#how">
                 View Demo
               </CtaButton>
             </div>
           </div>
-          <div className="flex justify-center lg:justify-end">
-            <HeroPhone />
-          </div>
+          <HeroVisual />
         </div>
       </Container>
     </Section>

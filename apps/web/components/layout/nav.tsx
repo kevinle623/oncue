@@ -4,10 +4,9 @@ import { CtaButton } from "@/components/common/cta-button";
 import { Wordmark } from "./wordmark";
 
 const links = [
-  { label: "Features", href: "#features" },
-  { label: "How it works", href: "#how" },
-  { label: "Integrations", href: "#integrations" },
-  { label: "Showcase", href: "#showcase" },
+  { label: "How it works", href: "/#how" },
+  { label: "Showcase", href: "/#showcase" },
+  { label: "Integrations", href: "/#integrations" },
 ];
 
 export function Nav() {
@@ -28,7 +27,9 @@ export function Nav() {
             </Link>
           ))}
         </nav>
-        <CtaButton className="px-5 py-2.5 text-[11px]">Get Started</CtaButton>
+        <CtaButton disabled className="px-5 py-2.5 text-[11px]">
+          Get Started
+        </CtaButton>
       </Container>
     </header>
   );

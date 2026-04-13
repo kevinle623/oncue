@@ -1,13 +1,14 @@
 import { Home, Music } from "lucide-react";
 import { Container } from "@/components/common/container";
 import { Section } from "@/components/common/section";
+import { FadedImage } from "@/components/illustrations/faded-image";
 import { cn } from "@/lib/utils";
 
 type UseCase = {
   icon: React.ComponentType<{ className?: string }>;
   quote: string;
   caption: string;
-  imageGradient: string;
+  image: { src: string; alt: string };
 };
 
 const cases: UseCase[] = [
@@ -15,15 +16,19 @@ const cases: UseCase[] = [
     icon: Music,
     quote: "Shuffle my late night drive playlist and set volume to 40%.",
     caption: "Works with Spotify & Apple Music",
-    imageGradient:
-      "radial-gradient(ellipse at 30% 30%, rgba(255,181,71,0.25), transparent 55%), radial-gradient(ellipse at 70% 80%, rgba(255,181,71,0.12), transparent 60%), linear-gradient(135deg, #1c1b1c, #0e0e0f)",
+    image: {
+      src: "/images/use-case-music.png",
+      alt: "Interior of a luxury modern car at night with illuminated dashboard and bokeh city lights in the background",
+    },
   },
   {
     icon: Home,
     quote: "Turn on the driveway lights and preheat the oven to 400.",
     caption: "Connected to HomeKit & Google Home",
-    imageGradient:
-      "radial-gradient(ellipse at 70% 40%, rgba(255,181,71,0.22), transparent 55%), radial-gradient(ellipse at 20% 80%, rgba(214,196,175,0.08), transparent 60%), linear-gradient(135deg, #131314, #1c1b1c)",
+    image: {
+      src: "/images/use-case-home.png",
+      alt: "Minimalist modern house exterior at dusk with warm interior lighting glowing through large glass windows",
+    },
   },
 ];
 
@@ -45,7 +50,7 @@ function UseCaseRow({
   icon: Icon,
   quote,
   caption,
-  imageGradient,
+  image,
   reverse,
 }: UseCase & { reverse?: boolean }) {
   return (
@@ -66,10 +71,13 @@ function UseCaseRow({
           {caption}
         </p>
       </div>
-      <div
-        aria-hidden
-        className="border-border aspect-video w-full flex-1 overflow-hidden rounded-xl border"
-        style={{ background: imageGradient }}
+      <FadedImage
+        src={image.src}
+        alt={image.alt}
+        fill
+        sizes="(min-width: 768px) 50vw, 100vw"
+        className="group aspect-video w-full flex-1"
+        imageClassName="grayscale transition-all duration-700 group-hover:grayscale-0"
       />
     </div>
   );
