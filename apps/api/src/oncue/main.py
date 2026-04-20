@@ -1,5 +1,6 @@
 from fastapi import FastAPI
 
+
 def create_app() -> FastAPI:
     app = FastAPI(title="OnCue API", version="0.1.0")
 
@@ -8,5 +9,6 @@ def create_app() -> FastAPI:
         return {"status": "ok"}
 
     return app
+
 
 app = create_app()
