@@ -5,7 +5,7 @@ from alembic import context
 from sqlalchemy.engine import Connection
 
 from oncue.adapters.db.postgresql import engine
-from oncue.models.base import Base
+from oncue.models import Base  # noqa: F401  (registers all models on Base.metadata)
 from oncue.settings import settings
 
 config = context.config
