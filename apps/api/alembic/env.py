@@ -5,7 +5,7 @@ from alembic import context
 from sqlalchemy.engine import Connection
 
 from oncue.adapters.db.postgresql import engine
-from oncue.repositories.base import Base
+from oncue.models.base import Base
 from oncue.settings import settings
 
 config = context.config

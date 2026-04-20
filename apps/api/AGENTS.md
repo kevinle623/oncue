@@ -4,7 +4,8 @@
 
 ### Service + Repository Pattern
 
-- Repositories own all database access. SQLAlchemy model types stay strictly inside `repositories/`. Never import models from `services/`, `api/`, or anywhere else.
+- SQLAlchemy models live in `models/` (one class per file, plus `models/base.py` with the shared `DeclarativeBase`).
+- Repositories own all database access and are the only layer allowed to import from `models/`. Never import models from `services/`, `api/`, or anywhere else.
 - Services accept and return Pydantic DTOs only. DTOs live in `dtos/`.
 - Routes call services, services call repositories. No skipping layers.
 
