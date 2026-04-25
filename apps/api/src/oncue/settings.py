@@ -16,6 +16,7 @@ class Settings(BaseSettings):
     # Deepgram / ElevenLabs / Anthropic
     deepgram_api_key: str
     elevenlabs_api_key: str
+    elevenlabs_voice_id: str
     anthropic_api_key: str
 
     # Infra

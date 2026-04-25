@@ -91,11 +91,15 @@ Track progress here. Update as work lands.
 - mypy override added for `twilio.*` (no stubs shipped).
 - Tests added: twilio adapter (signature ok/tampered, TwiML shape, wss derivation), voice routes (incoming TwiML + persistence, missing fields → 400, status terminal vs in-progress, bad signature → 403).
 
+- STT adapter (`adapters/stt/deepgram.py`): `open_session` async ctx mgr → `STTSession` (`send_audio`, `transcripts()` async iterator yielding `Transcript(text, is_final)`, idempotent `close` sends Deepgram `CloseStream`). Uses `websockets` (bundled via `uvicorn[standard]`) directly — Deepgram SDK not used.
+- TTS adapter (`adapters/tts/elevenlabs.py`): `synthesize(text, voice_id?, model_id?, output_format="ulaw_8000")` async iterator yielding raw audio chunks via `httpx.AsyncClient.stream`. ElevenLabs SDK not used.
+- CallTurn DTO + repo (`dtos/call_turn.py`, `repositories/call_turn_repo.py`): `create`, `list_by_call` (ordered by `created_at`).
+- Settings: `elevenlabs_voice_id` (default Rachel `21m00Tcm4TlvDq8ikWAM`).
+- Tests: STT (`_parse_transcript`, URL builder, fake-WS session yields/send/close/idempotency); TTS (mock-httpx request shape + chunk streaming, error propagation).
+
 ### Remaining
-- **STT adapter** (`adapters/stt/deepgram.py`): empty.
-- **TTS adapter** (`adapters/tts/elevenlabs.py`): empty.
-- **Voice WebSocket handler**: no `/voice/stream` endpoint yet. Needs to bridge Twilio Media Streams ↔ Deepgram (STT) ↔ `conversation_service.run_turn` ↔ ElevenLabs (TTS), and persist `CallTurn` rows per turn.
-- **`call_turn` repo**: model exists, repository not written.
+- **Voice WebSocket handler**: no `/voice/stream` endpoint yet. Needs to bridge Twilio Media Streams ↔ Deepgram (STT) ↔ `conversation_service.run_turn` ↔ ElevenLabs (TTS), and persist `CallTurn` rows per turn. Twilio frames are base64-encoded μ-law in JSON `media` events; outbound expects the same shape.
+- **Unused SDK deps**: `deepgram-sdk` and `elevenlabs` are listed in `pyproject.toml` but not used (we went direct via `websockets` + `httpx`). Candidate for removal in a cleanup pass.
 - **Deferred tools**: register Spotify mutation tools (`play`, `pause`, `skip`, `queue`) as `bucket="deferred"`. Adapter HTTP wrappers already exist.
 - **Workers** (`workers/`): empty. Needs Celery app, Redis queue keyed by `CallSid`, and a task that drains the queue ~4s after Twilio `call-status=completed`.
 - **`deferred_tool_job` repo**: model exists, repository not written.
