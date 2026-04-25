@@ -1,7 +1,7 @@
-from fastapi import FastAPI
+from fastapi import APIRouter, FastAPI
 
-from oncue.api import spotify as spotify_api
-from oncue.api import voice as voice_api
+from oncue.api.v1 import spotify as spotify_api
+from oncue.api.v1 import voice as voice_api
 
 
 def create_app() -> FastAPI:
@@ -11,8 +11,10 @@ def create_app() -> FastAPI:
     async def health() -> dict[str, str]:
         return {"status": "ok"}
 
-    app.include_router(spotify_api.router)
-    app.include_router(voice_api.router)
+    v1 = APIRouter(prefix="/v1")
+    v1.include_router(spotify_api.router)
+    v1.include_router(voice_api.router)
+    app.include_router(v1)
     return app
 
 

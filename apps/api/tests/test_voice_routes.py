@@ -75,7 +75,7 @@ def test_incoming_returns_twiml_and_registers_call(
     monkeypatch.setattr(call_service, "register_incoming_call", fake_register)
 
     response = client.post(
-        "/voice/incoming",
+        "/v1/voice/incoming",
         data={
             "CallSid": "CA123",
             "From": "+15551234567",
@@ -99,7 +99,7 @@ def test_incoming_returns_twiml_and_registers_call(
 def test_incoming_returns_400_when_required_field_missing(
     client: TestClient,
 ) -> None:
-    response = client.post("/voice/incoming", data={"CallSid": "CA123"})
+    response = client.post("/v1/voice/incoming", data={"CallSid": "CA123"})
     assert response.status_code == 400
 
 
@@ -135,10 +135,10 @@ def test_status_updates_call_and_sets_ended_at_on_terminal(
         scheduled.append(call_sid)
 
     monkeypatch.setattr(call_service, "update_status", fake_update)
-    monkeypatch.setattr("oncue.api.voice.enqueue_call_completion", fake_enqueue)
+    monkeypatch.setattr("oncue.api.v1.voice.enqueue_call_completion", fake_enqueue)
 
     response = client.post(
-        "/voice/status",
+        "/v1/voice/status",
         data={"CallSid": "CA999", "CallStatus": "completed"},
     )
 
@@ -181,10 +181,10 @@ def test_status_does_not_set_ended_at_for_in_progress(
         scheduled.append(call_sid)
 
     monkeypatch.setattr(call_service, "update_status", fake_update)
-    monkeypatch.setattr("oncue.api.voice.enqueue_call_completion", fake_enqueue)
+    monkeypatch.setattr("oncue.api.v1.voice.enqueue_call_completion", fake_enqueue)
 
     response = client.post(
-        "/voice/status",
+        "/v1/voice/status",
         data={"CallSid": "CA1", "CallStatus": "in-progress"},
     )
 
@@ -206,7 +206,7 @@ def test_incoming_rejects_bad_signature_when_validation_enabled(
         app.dependency_overrides[get_session] = _fake_get_session
         with TestClient(app) as c:
             response = c.post(
-                "/voice/incoming",
+                "/v1/voice/incoming",
                 data={
                     "CallSid": "CA1",
                     "From": "+1",

@@ -33,7 +33,7 @@ def test_build_voice_twiml_includes_stream_and_call_sid(
     assert "<Say>Hello.</Say>" in twiml
     assert "<Connect>" in twiml
     assert "<Stream" in twiml
-    assert "/voice/stream" in twiml
+    assert "/v1/voice/stream" in twiml
     assert 'name="call_sid"' in twiml
     assert 'value="CA999"' in twiml
 
@@ -47,6 +47,6 @@ def test_build_voice_twiml_uses_wss_scheme_when_https(
     try:
         settings_mod.settings.app_base_url = "https://oncue.example.com"
         twiml = twilio_adapter.build_voice_twiml("CA1")
-        assert "wss://oncue.example.com/voice/stream" in twiml
+        assert "wss://oncue.example.com/v1/voice/stream" in twiml
     finally:
         settings_mod.settings.app_base_url = original

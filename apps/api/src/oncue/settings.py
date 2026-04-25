@@ -11,7 +11,7 @@ class Settings(BaseSettings):
     # Spotify
     spotify_client_id: str
     spotify_client_secret: str
-    spotify_redirect_uri: str = "http://localhost:8000/spotify/callback"
+    spotify_redirect_uri: str = "http://localhost:8000/v1/spotify/callback"
 
     # Deepgram / ElevenLabs / Anthropic
     deepgram_api_key: str

@@ -2,6 +2,12 @@
 
 ## Architecture
 
+### API Versioning
+
+- Versioned route modules live under `src/oncue/api/v1/`.
+- `main.py` mounts v1 under `/v1`.
+- Add new endpoints to the active version directory (for example `api/v2/` when introduced).
+
 ### Service + Repository Pattern
 
 - SQLAlchemy models live in `models/` (one class per file, plus `models/base.py` with the shared `DeclarativeBase`).
@@ -78,7 +84,7 @@ Track progress here. Update as work lands.
   - call turns: `dtos/call_turn.py`, `repositories/call_turn_repo.py`
   - deferred jobs: `dtos/deferred_tool_job.py`, `repositories/deferred_tool_job_repo.py`
 - Spotify auth + token lifecycle:
-  - routes: `/spotify/authorize`, `/spotify/callback` (Redis-backed state)
+  - routes: `/v1/spotify/authorize`, `/v1/spotify/callback` (Redis-backed state)
   - adapter: auth URL, code exchange, refresh, playback wrappers + `SpotifyAPIError`
   - service: `get_fresh_access_token`, `now_playing`, `search_tracks`, `play`, `pause`, `skip_next`, `queue_track`
 - Tools:
@@ -91,9 +97,9 @@ Track progress here. Update as work lands.
   - iteration cap enforced
 - Telephony + voice routes:
   - Twilio adapter validates signatures and builds TwiML with `<Connect><Stream>`
-  - `POST /voice/incoming` registers call + returns TwiML
-  - `POST /voice/status` updates call status and enqueues deferred tool execution on `completed`
-  - `WS /voice/stream` bridges Twilio media frames ↔ STT ↔ conversation ↔ TTS and persists `CallTurn` rows
+  - `POST /v1/voice/incoming` registers call + returns TwiML
+  - `POST /v1/voice/status` updates call status and enqueues deferred tool execution on `completed`
+  - `WS /v1/voice/stream` bridges Twilio media frames ↔ STT ↔ conversation ↔ TTS and persists `CallTurn` rows
 - Deferred execution pipeline:
   - Redis queue keyed by `CallSid` stores deferred job IDs as a scheduling hint
   - DB is source of truth for due jobs; worker can execute due jobs even if Redis enqueue fails

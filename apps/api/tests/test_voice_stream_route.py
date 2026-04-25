@@ -70,7 +70,7 @@ def test_stream_resolves_call_runs_session_and_bridges_audio(
     monkeypatch.setattr(call_repo, "get_by_sid", fake_get_by_sid)
     monkeypatch.setattr(voice_session_service, "run_session", fake_run_session)
 
-    with client.websocket_connect("/voice/stream") as ws:
+    with client.websocket_connect("/v1/voice/stream") as ws:
         ws.send_json({"event": "connected"})
         ws.send_json(
             {
@@ -103,7 +103,7 @@ def test_stream_closes_when_call_unknown(
 
     monkeypatch.setattr(call_repo, "get_by_sid", fake_get_by_sid)
 
-    with client.websocket_connect("/voice/stream") as ws:
+    with client.websocket_connect("/v1/voice/stream") as ws:
         ws.send_json(
             {
                 "event": "start",
@@ -115,7 +115,7 @@ def test_stream_closes_when_call_unknown(
 
 
 def test_stream_exits_cleanly_on_immediate_stop(client: TestClient) -> None:
-    with client.websocket_connect("/voice/stream") as ws:
+    with client.websocket_connect("/v1/voice/stream") as ws:
         ws.send_json({"event": "stop"})
         with pytest.raises(WebSocketDisconnect):
             ws.receive_json()

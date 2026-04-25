@@ -26,7 +26,7 @@ def build_voice_twiml(call_sid: str, *, greeting: str | None = None) -> str:
     if greeting:
         response.say(greeting)
     connect = Connect()
-    stream = connect.stream(url=_ws_url("/voice/stream"))
+    stream = connect.stream(url=_ws_url("/v1/voice/stream"))
     stream.parameter(name="call_sid", value=call_sid)
     response.append(connect)
     return str(response)
