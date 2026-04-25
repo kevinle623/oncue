@@ -67,6 +67,31 @@ Current stack: FastAPI, Pydantic, pydantic-settings, SQLAlchemy, Alembic, asyncp
 
 All Twilio webhooks must validate the `X-Twilio-Signature` header before processing.
 
+## Implementation Status
+
+Track progress here. Update as work lands.
+
+### Done
+- Models: `user`, `spotify_account`, `call`, `call_turn`, `deferred_tool_job`
+- Spotify OAuth: `/spotify/authorize` and `/spotify/callback` (Redis-backed state)
+- Spotify adapter: auth URL, code exchange, refresh, playback HTTP wrappers (currently-playing, search, play, pause, skip, queue) + `SpotifyAPIError`
+- Spotify service: `get_fresh_access_token` (skew-aware refresh + persist), `now_playing`, `search_tracks`
+- DTOs: `TrackDTO`, `NowPlayingDTO`
+- Tools registry: `tools/base.py` (`Tool`, `ToolContext`, `dispatch_immediate` enforces immediate-only during calls)
+- Immediate Spotify tools: `spotify_now_playing`, `spotify_search_tracks`
+- Tests: adapter (httpx MockTransport), service token-refresh, tool dispatch. `pytest-asyncio` auto mode configured.
+
+### Remaining
+- **Telephony adapter** (`adapters/telephony/twilio.py`): empty. Needs signature validation, TwiML helpers, Media Streams setup.
+- **STT adapter** (`adapters/stt/deepgram.py`): empty.
+- **TTS adapter** (`adapters/tts/elevenlabs.py`): empty.
+- **LLM adapter** (`adapters/llm/anthropic.py`): empty. Should consume `tools.REGISTRY` to build Anthropic tool-use schemas and run the chat loop.
+- **Deferred tools**: register Spotify mutation tools (`play`, `pause`, `skip`, `queue`) as `bucket="deferred"`. Adapter HTTP wrappers already exist.
+- **Workers** (`workers/`): empty. Needs Celery app, Redis queue keyed by `CallSid`, and a task that drains the queue ~4s after Twilio `call-status=completed`.
+- **Voice routes**: no `/voice` Twilio webhook endpoints yet. Need entry point + per-turn handler that wires STT → LLM (immediate tools) → TTS, and persists `call` + `call_turn` rows.
+- **Repos for call/call_turn/deferred_tool_job**: models exist, repositories not written.
+- **Settings**: no `webhook_base_url` / `app_base_url` for Twilio callback registration yet.
+
 ## Before Declaring Done
 
 ```sh
