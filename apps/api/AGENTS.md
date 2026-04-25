@@ -79,13 +79,14 @@ Track progress here. Update as work lands.
 - DTOs: `TrackDTO`, `NowPlayingDTO`
 - Tools registry: `tools/base.py` (`Tool`, `ToolContext`, `dispatch_immediate` enforces immediate-only during calls)
 - Immediate Spotify tools: `spotify_now_playing`, `spotify_search_tracks`
-- Tests: adapter (httpx MockTransport), service token-refresh, tool dispatch. `pytest-asyncio` auto mode configured.
+- LLM adapter (`adapters/llm/anthropic.py`): SDK-agnostic types (`LLMMessage`, `LLMTool`, `LLMResponse`, content blocks) wrapping `AsyncAnthropic.messages.create`. Default model `claude-haiku-4-5-20251001`.
+- Conversation service (`services/conversation_service.py`): `run_turn(ctx, user_text, history)` — loops LLM call → `dispatch_immediate` → tool_result → repeat until text response. Exposes only immediate tools. Iteration cap.
+- Tests: adapter (httpx MockTransport), service token-refresh, tool dispatch, conversation loop (no-tool, tool_use, tool error, iteration cap). `pytest-asyncio` auto mode configured.
 
 ### Remaining
 - **Telephony adapter** (`adapters/telephony/twilio.py`): empty. Needs signature validation, TwiML helpers, Media Streams setup.
 - **STT adapter** (`adapters/stt/deepgram.py`): empty.
 - **TTS adapter** (`adapters/tts/elevenlabs.py`): empty.
-- **LLM adapter** (`adapters/llm/anthropic.py`): empty. Should consume `tools.REGISTRY` to build Anthropic tool-use schemas and run the chat loop.
 - **Deferred tools**: register Spotify mutation tools (`play`, `pause`, `skip`, `queue`) as `bucket="deferred"`. Adapter HTTP wrappers already exist.
 - **Workers** (`workers/`): empty. Needs Celery app, Redis queue keyed by `CallSid`, and a task that drains the queue ~4s after Twilio `call-status=completed`.
 - **Voice routes**: no `/voice` Twilio webhook endpoints yet. Need entry point + per-turn handler that wires STT → LLM (immediate tools) → TTS, and persists `call` + `call_turn` rows.
