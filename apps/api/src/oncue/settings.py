@@ -22,5 +22,10 @@ class Settings(BaseSettings):
     redis_url: str = "redis://localhost:6379/0"
     database_url: str = "postgresql+asyncpg://oncue:oncue@localhost:5432/oncue"
 
+    # Public app URL (used to build Twilio webhook + Media Stream URLs)
+    app_base_url: str = "http://localhost:8000"
+    # Disable in tests / local dev without ngrok
+    twilio_validate_signature: bool = True
+
 
 settings = Settings()

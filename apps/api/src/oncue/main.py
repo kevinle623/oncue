@@ -1,6 +1,7 @@
 from fastapi import FastAPI
 
 from oncue.api import spotify as spotify_api
+from oncue.api import voice as voice_api
 
 
 def create_app() -> FastAPI:
@@ -11,6 +12,7 @@ def create_app() -> FastAPI:
         return {"status": "ok"}
 
     app.include_router(spotify_api.router)
+    app.include_router(voice_api.router)
     return app
 
 

@@ -83,15 +83,22 @@ Track progress here. Update as work lands.
 - Conversation service (`services/conversation_service.py`): `run_turn(ctx, user_text, history)` — loops LLM call → `dispatch_immediate` → tool_result → repeat until text response. Exposes only immediate tools. Iteration cap.
 - Tests: adapter (httpx MockTransport), service token-refresh, tool dispatch, conversation loop (no-tool, tool_use, tool error, iteration cap). `pytest-asyncio` auto mode configured.
 
+- Telephony adapter (`adapters/telephony/twilio.py`): `validate_signature` (RequestValidator) and `build_voice_twiml` (greeting + `<Connect><Stream>` with `call_sid` parameter; auto-converts http→ws scheme).
+- Call DTOs + repo (`dtos/call.py`, `repositories/call_repo.py`): `get_by_sid`, `create`, `update_status`.
+- Call service (`services/call_service.py`): `register_incoming_call` (idempotent on sid, creates user via phone), `update_status`, `TERMINAL_STATUSES`.
+- Voice routes (`api/voice.py`): `POST /voice/incoming` validates Twilio signature → registers call → returns TwiML; `POST /voice/status` updates status (sets `ended_at` on terminal). Mounted in `main.create_app`.
+- Settings: `app_base_url`, `twilio_validate_signature` flag (also in `.env.example`).
+- mypy override added for `twilio.*` (no stubs shipped).
+- Tests added: twilio adapter (signature ok/tampered, TwiML shape, wss derivation), voice routes (incoming TwiML + persistence, missing fields → 400, status terminal vs in-progress, bad signature → 403).
+
 ### Remaining
-- **Telephony adapter** (`adapters/telephony/twilio.py`): empty. Needs signature validation, TwiML helpers, Media Streams setup.
 - **STT adapter** (`adapters/stt/deepgram.py`): empty.
 - **TTS adapter** (`adapters/tts/elevenlabs.py`): empty.
+- **Voice WebSocket handler**: no `/voice/stream` endpoint yet. Needs to bridge Twilio Media Streams ↔ Deepgram (STT) ↔ `conversation_service.run_turn` ↔ ElevenLabs (TTS), and persist `CallTurn` rows per turn.
+- **`call_turn` repo**: model exists, repository not written.
 - **Deferred tools**: register Spotify mutation tools (`play`, `pause`, `skip`, `queue`) as `bucket="deferred"`. Adapter HTTP wrappers already exist.
 - **Workers** (`workers/`): empty. Needs Celery app, Redis queue keyed by `CallSid`, and a task that drains the queue ~4s after Twilio `call-status=completed`.
-- **Voice routes**: no `/voice` Twilio webhook endpoints yet. Need entry point + per-turn handler that wires STT → LLM (immediate tools) → TTS, and persists `call` + `call_turn` rows.
-- **Repos for call/call_turn/deferred_tool_job**: models exist, repositories not written.
-- **Settings**: no `webhook_base_url` / `app_base_url` for Twilio callback registration yet.
+- **`deferred_tool_job` repo**: model exists, repository not written.
 
 ## Before Declaring Done
 
