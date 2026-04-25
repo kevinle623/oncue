@@ -1,12 +1,24 @@
+import asyncio
+import base64
+from collections.abc import AsyncIterator
 from datetime import UTC, datetime
 from typing import Annotated
 
-from fastapi import APIRouter, Depends, HTTPException, Request, Response
+from fastapi import (
+    APIRouter,
+    Depends,
+    HTTPException,
+    Request,
+    Response,
+    WebSocket,
+    WebSocketDisconnect,
+)
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from oncue.adapters.db.postgresql import get_session
 from oncue.adapters.telephony import twilio as twilio_adapter
-from oncue.services import call_service
+from oncue.repositories import call_repo
+from oncue.services import call_service, voice_session_service
 from oncue.settings import settings
 
 router = APIRouter(prefix="/voice", tags=["voice"])
@@ -77,3 +89,76 @@ async def status(
     )
     await session.commit()
     return Response(status_code=204)
+
+
+@router.websocket("/stream")
+async def stream(
+    ws: WebSocket,
+    db_session: Annotated[AsyncSession, Depends(get_session)],
+) -> None:
+    await ws.accept()
+
+    stream_sid: str | None = None
+    call_sid: str | None = None
+    while stream_sid is None:
+        event = await ws.receive_json()
+        etype = event.get("event")
+        if etype == "start":
+            stream_sid = event["start"]["streamSid"]
+            call_sid = event["start"]["callSid"]
+        elif etype == "stop":
+            await ws.close()
+            return
+        # ignore "connected" and any other preamble events
+
+    assert call_sid is not None
+    call = await call_repo.get_by_sid(db_session, call_sid)
+    if call is None:
+        await ws.close(code=1008)
+        return
+
+    audio_queue: asyncio.Queue[bytes | None] = asyncio.Queue()
+
+    async def inbound() -> AsyncIterator[bytes]:
+        while True:
+            chunk = await audio_queue.get()
+            if chunk is None:
+                return
+            yield chunk
+
+    async def send_audio(chunk: bytes) -> None:
+        await ws.send_json(
+            {
+                "event": "media",
+                "streamSid": stream_sid,
+                "media": {"payload": base64.b64encode(chunk).decode("ascii")},
+            }
+        )
+
+    session_task = asyncio.create_task(
+        voice_session_service.run_session(
+            db_session,
+            call=call,
+            inbound_audio=inbound(),
+            send_audio=send_audio,
+        )
+    )
+
+    try:
+        while True:
+            event = await ws.receive_json()
+            etype = event.get("event")
+            if etype == "media":
+                payload = event["media"]["payload"]
+                await audio_queue.put(base64.b64decode(payload))
+            elif etype == "stop":
+                break
+    except WebSocketDisconnect:
+        pass
+    finally:
+        await audio_queue.put(None)
+        await asyncio.gather(session_task, return_exceptions=True)
+        try:
+            await ws.close()
+        except RuntimeError:
+            pass
