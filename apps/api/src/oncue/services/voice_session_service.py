@@ -35,13 +35,16 @@ async def run_session(
 
     async with stt.open_session() as stt_session:
         pump_task = asyncio.create_task(_pump_audio(inbound_audio, stt_session))
+        should_cancel_speak = True
         try:
             async for transcript in stt_session.transcripts():
                 if not transcript.is_final:
-                    speak_task = _cancel(speak_task)
+                    _cancel(speak_task)
+                    speak_task = None
                     continue
 
-                speak_task = _cancel(speak_task)
+                _cancel(speak_task)
+                speak_task = None
 
                 await call_turn_repo.create(
                     db_session,
@@ -68,9 +71,11 @@ async def run_session(
 
                 if reply:
                     speak_task = asyncio.create_task(_speak(reply, send_audio))
+            should_cancel_speak = False
         finally:
-            if speak_task is not None and not speak_task.done():
-                speak_task.cancel()
+            if speak_task is not None:
+                if should_cancel_speak and not speak_task.done():
+                    speak_task.cancel()
                 await asyncio.gather(speak_task, return_exceptions=True)
             pump_task.cancel()
             await asyncio.gather(pump_task, return_exceptions=True)
