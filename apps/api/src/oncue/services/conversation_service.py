@@ -2,6 +2,8 @@ import json
 from typing import Any
 
 from oncue.adapters.llm import anthropic as llm
+from oncue.repositories import call_repo
+from oncue.services import deferred_tool_service
 from oncue.tools import REGISTRY, dispatch_immediate
 from oncue.tools.base import ToolBucket, ToolContext
 
@@ -36,7 +38,7 @@ async def run_turn(
 ) -> tuple[str, list[llm.LLMMessage]]:
     messages: list[llm.LLMMessage] = list(history or [])
     messages.append(llm.LLMMessage(role="user", content=user_text))
-    tools = _llm_tools_for_bucket("immediate")
+    tools = _llm_tools_for_bucket("immediate") + _llm_tools_for_bucket("deferred")
 
     for _ in range(MAX_TOOL_ITERATIONS):
         response = await llm.create_message(
@@ -62,7 +64,33 @@ async def run_turn(
         results: list[llm.LLMInputBlock] = []
         for tu in tool_uses:
             try:
-                result: Any = await dispatch_immediate(REGISTRY, ctx, tu.name, tu.input)
+                tool = REGISTRY.get(tu.name)
+                if tool is None:
+                    raise KeyError(f"Unknown tool: {tu.name}")
+
+                result: Any
+                if tool.bucket == "immediate":
+                    result = await dispatch_immediate(REGISTRY, ctx, tu.name, tu.input)
+                else:
+                    if ctx.call_id is None:
+                        raise RuntimeError(
+                            "Deferred tools require a call context during a voice session"
+                        )
+                    call = await call_repo.get_by_id(ctx.session, ctx.call_id)
+                    if call is None:
+                        raise RuntimeError(f"Call {ctx.call_id} not found")
+                    job = await deferred_tool_service.enqueue_for_call(
+                        ctx.session,
+                        call=call,
+                        tool_name=tu.name,
+                        arguments=tu.input,
+                    )
+                    result = {
+                        "status": "queued",
+                        "tool_name": tu.name,
+                        "job_id": str(job.id),
+                        "scheduled_for": job.scheduled_for.isoformat(),
+                    }
                 results.append(
                     llm.LLMToolResultBlock(
                         tool_use_id=tu.id,

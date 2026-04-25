@@ -1,8 +1,16 @@
+import uuid
+
 from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from oncue.dtos.call import CallCreateDTO, CallDTO, CallStatusUpdateDTO
 from oncue.models.call import Call
+
+
+async def get_by_id(session: AsyncSession, call_id: uuid.UUID) -> CallDTO | None:
+    result = await session.execute(select(Call).where(Call.id == call_id))
+    call = result.scalar_one_or_none()
+    return CallDTO.model_validate(call) if call else None
 
 
 async def get_by_sid(session: AsyncSession, call_sid: str) -> CallDTO | None:

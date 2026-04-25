@@ -102,3 +102,51 @@ async def search_tracks(
     payload = await spotify_adapter.search_tracks(token, query, limit=limit)
     items = (payload.get("tracks") or {}).get("items") or []
     return [TrackDTO.from_spotify(item) for item in items]
+
+
+async def play(
+    session: AsyncSession,
+    user_id: uuid.UUID,
+    *,
+    uris: list[str] | None = None,
+    context_uri: str | None = None,
+    device_id: str | None = None,
+) -> None:
+    token = await get_fresh_access_token(session, user_id)
+    await spotify_adapter.start_playback(
+        token,
+        uris=uris,
+        context_uri=context_uri,
+        device_id=device_id,
+    )
+
+
+async def pause(
+    session: AsyncSession,
+    user_id: uuid.UUID,
+    *,
+    device_id: str | None = None,
+) -> None:
+    token = await get_fresh_access_token(session, user_id)
+    await spotify_adapter.pause_playback(token, device_id=device_id)
+
+
+async def skip_next(
+    session: AsyncSession,
+    user_id: uuid.UUID,
+    *,
+    device_id: str | None = None,
+) -> None:
+    token = await get_fresh_access_token(session, user_id)
+    await spotify_adapter.skip_to_next(token, device_id=device_id)
+
+
+async def queue_track(
+    session: AsyncSession,
+    user_id: uuid.UUID,
+    *,
+    uri: str,
+    device_id: str | None = None,
+) -> None:
+    token = await get_fresh_access_token(session, user_id)
+    await spotify_adapter.add_to_queue(token, uri=uri, device_id=device_id)

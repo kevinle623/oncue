@@ -12,6 +12,7 @@ ToolBucket = Literal["immediate", "deferred"]
 class ToolContext:
     session: AsyncSession
     user_id: uuid.UUID
+    call_id: uuid.UUID | None = None
 
 
 ToolHandler = Callable[[ToolContext, dict[str, Any]], Awaitable[Any]]
@@ -56,4 +57,18 @@ async def dispatch_immediate(
         raise ToolNotAllowedError(
             f"Tool {name!r} is deferred and cannot run during an active call"
         )
+    return await tool.handler(ctx, arguments)
+
+
+async def dispatch_deferred(
+    registry: dict[str, Tool],
+    ctx: ToolContext,
+    name: str,
+    arguments: dict[str, Any],
+) -> Any:
+    tool = registry.get(name)
+    if tool is None:
+        raise UnknownToolError(name)
+    if tool.bucket != "deferred":
+        raise ToolNotAllowedError(f"Tool {name!r} is immediate and cannot be deferred")
     return await tool.handler(ctx, arguments)

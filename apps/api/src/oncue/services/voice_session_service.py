@@ -29,7 +29,7 @@ async def run_session(
     if call.user_id is None:
         raise CallNotLinkedError(f"Call {call.call_sid} has no associated user")
 
-    ctx = ToolContext(session=db_session, user_id=call.user_id)
+    ctx = ToolContext(session=db_session, user_id=call.user_id, call_id=call.id)
     history: list[llm.LLMMessage] = []
     speak_task: asyncio.Task[None] | None = None
 

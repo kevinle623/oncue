@@ -1,17 +1,28 @@
 import json
 import uuid
 from collections.abc import Sequence
+from datetime import UTC, datetime
 from typing import Any
 
 import pytest
 
 from oncue.adapters.llm import anthropic as llm
+from oncue.dtos.call import CallDTO
+from oncue.dtos.deferred_tool_job import DeferredToolJobDTO
 from oncue.services import conversation_service
 from oncue.tools.base import ToolContext
 
 
-def _ctx() -> ToolContext:
-    return ToolContext(session=None, user_id=uuid.uuid4())  # type: ignore[arg-type]
+def _ctx(
+    *,
+    user_id: uuid.UUID | None = None,
+    call_id: uuid.UUID | None = None,
+) -> ToolContext:
+    return ToolContext(
+        session=None,  # type: ignore[arg-type]
+        user_id=user_id or uuid.uuid4(),
+        call_id=call_id,
+    )
 
 
 async def test_run_turn_returns_text_when_no_tool_use(
@@ -184,3 +195,95 @@ async def test_run_turn_raises_when_iteration_cap_exceeded(
 
     with pytest.raises(RuntimeError, match="exceeded"):
         await conversation_service.run_turn(_ctx(), "loop")
+
+
+async def test_run_turn_queues_deferred_tool_and_continues(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    call_count = 0
+    call_id = uuid.uuid4()
+    user_id = uuid.uuid4()
+    now = datetime.now(UTC)
+
+    async def fake_create(
+        *,
+        system: str,
+        messages: Sequence[llm.LLMMessage],
+        tools: Sequence[llm.LLMTool] = (),
+        model: str = "",
+        max_tokens: int = 0,
+    ) -> llm.LLMResponse:
+        nonlocal call_count
+        call_count += 1
+        if call_count == 1:
+            assert any(t.name == "spotify_pause" for t in tools)
+            return llm.LLMResponse(
+                content=[
+                    llm.LLMToolUseBlock(
+                        id="tu_pause",
+                        name="spotify_pause",
+                        input={},
+                    )
+                ],
+                stop_reason="tool_use",
+            )
+        return llm.LLMResponse(
+            content=[llm.LLMTextBlock(text="Okay, I will pause after the call.")],
+            stop_reason="end_turn",
+        )
+
+    async def fake_get_by_id(_session: object, _call_id: uuid.UUID) -> CallDTO:
+        return CallDTO(
+            id=call_id,
+            call_sid="CA123",
+            user_id=user_id,
+            status="in-progress",
+            from_number="+1",
+            to_number="+2",
+            started_at=now,
+            ended_at=None,
+        )
+
+    async def fake_enqueue(
+        _session: object,
+        *,
+        call: CallDTO,
+        tool_name: str,
+        arguments: dict[str, Any],
+    ) -> DeferredToolJobDTO:
+        assert call.call_sid == "CA123"
+        assert tool_name == "spotify_pause"
+        assert arguments == {}
+        return DeferredToolJobDTO(
+            id=uuid.uuid4(),
+            call_id=call.id,
+            tool_name=tool_name,
+            args=arguments,
+            status="pending",
+            scheduled_for=now,
+            executed_at=None,
+            error=None,
+            created_at=now,
+        )
+
+    monkeypatch.setattr(llm, "create_message", fake_create)
+    monkeypatch.setattr(conversation_service.call_repo, "get_by_id", fake_get_by_id)
+    monkeypatch.setattr(
+        conversation_service.deferred_tool_service,
+        "enqueue_for_call",
+        fake_enqueue,
+    )
+
+    text, history = await conversation_service.run_turn(
+        _ctx(user_id=user_id, call_id=call_id),
+        "pause it",
+    )
+
+    assert text == "Okay, I will pause after the call."
+    tool_result_msg = history[-2]
+    assert isinstance(tool_result_msg.content, list)
+    block = tool_result_msg.content[0]
+    assert isinstance(block, llm.LLMToolResultBlock)
+    payload = json.loads(block.content)
+    assert payload["status"] == "queued"
+    assert payload["tool_name"] == "spotify_pause"

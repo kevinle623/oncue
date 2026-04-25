@@ -107,6 +107,7 @@ def test_status_updates_call_and_sets_ended_at_on_terminal(
     client: TestClient, monkeypatch: pytest.MonkeyPatch
 ) -> None:
     captured: dict[str, Any] = {}
+    scheduled: list[str] = []
 
     async def fake_update(
         _session: object,
@@ -114,11 +115,27 @@ def test_status_updates_call_and_sets_ended_at_on_terminal(
         call_sid: str,
         status: str,
         ended_at: object | None = None,
-    ) -> None:
+    ) -> CallDTO:
         captured.update(call_sid=call_sid, status=status, ended_at=ended_at)
-        return None
+        from datetime import UTC, datetime
+        from uuid import uuid4
+
+        return CallDTO(
+            id=uuid4(),
+            call_sid=call_sid,
+            user_id=uuid4(),
+            status=status,
+            from_number="+1",
+            to_number="+2",
+            started_at=datetime.now(UTC),
+            ended_at=None,
+        )
+
+    def fake_enqueue(call_sid: str) -> None:
+        scheduled.append(call_sid)
 
     monkeypatch.setattr(call_service, "update_status", fake_update)
+    monkeypatch.setattr("oncue.api.voice.enqueue_call_completion", fake_enqueue)
 
     response = client.post(
         "/voice/status",
@@ -129,12 +146,14 @@ def test_status_updates_call_and_sets_ended_at_on_terminal(
     assert captured["call_sid"] == "CA999"
     assert captured["status"] == "completed"
     assert captured["ended_at"] is not None
+    assert scheduled == ["CA999"]
 
 
 def test_status_does_not_set_ended_at_for_in_progress(
     client: TestClient, monkeypatch: pytest.MonkeyPatch
 ) -> None:
     captured: dict[str, Any] = {}
+    scheduled: list[str] = []
 
     async def fake_update(
         _session: object,
@@ -142,11 +161,27 @@ def test_status_does_not_set_ended_at_for_in_progress(
         call_sid: str,
         status: str,
         ended_at: object | None = None,
-    ) -> None:
+    ) -> CallDTO:
         captured.update(ended_at=ended_at)
-        return None
+        from datetime import UTC, datetime
+        from uuid import uuid4
+
+        return CallDTO(
+            id=uuid4(),
+            call_sid=call_sid,
+            user_id=uuid4(),
+            status=status,
+            from_number="+1",
+            to_number="+2",
+            started_at=datetime.now(UTC),
+            ended_at=None,
+        )
+
+    def fake_enqueue(call_sid: str) -> None:
+        scheduled.append(call_sid)
 
     monkeypatch.setattr(call_service, "update_status", fake_update)
+    monkeypatch.setattr("oncue.api.voice.enqueue_call_completion", fake_enqueue)
 
     response = client.post(
         "/voice/status",
@@ -155,6 +190,7 @@ def test_status_does_not_set_ended_at_for_in_progress(
 
     assert response.status_code == 204
     assert captured["ended_at"] is None
+    assert scheduled == []
 
 
 def test_incoming_rejects_bad_signature_when_validation_enabled(

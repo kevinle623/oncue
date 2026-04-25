@@ -41,7 +41,19 @@ cd apps/api
 poetry install
 docker compose up -d      # postgres + redis
 poetry run alembic upgrade head
-poetry run uvicorn src.main:app --reload
+poetry run uvicorn oncue.main:app --reload --app-dir src
+```
+
+### API Runbook (Server + Worker)
+
+```sh
+# terminal 1: API
+cd apps/api
+poetry run uvicorn oncue.main:app --reload --app-dir src
+
+# terminal 2: Celery worker (deferred Spotify mutations)
+cd apps/api
+poetry run celery -A oncue.workers.celery_app:celery_app worker --loglevel=info
 ```
 
 ## Design

@@ -23,4 +23,5 @@ Google Stitch generates HTML mockups under `apps/web/design-reference/stitch/<fo
 - Step-by-step reasoning when building things
 - Don't second-guess decisions already made. Push back with reasoning if you disagree, but don't hedge
 - Run lint and build before declaring work done
+- Keep agent context docs up to date after each change (especially `apps/api/AGENTS.md` / `apps/web/AGENTS.md` implementation status and local runbook notes)
 - See `apps/web/AGENTS.md` and `apps/api/AGENTS.md` for app-specific rules

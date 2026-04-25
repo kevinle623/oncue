@@ -20,6 +20,51 @@ async def _search_tracks(ctx: ToolContext, arguments: dict[str, Any]) -> dict[st
     return {"tracks": [t.model_dump() for t in tracks]}
 
 
+async def _play(ctx: ToolContext, arguments: dict[str, Any]) -> dict[str, Any]:
+    uris_raw = arguments.get("uris")
+    uris: list[str] | None = None
+    if isinstance(uris_raw, list):
+        uris = [str(uri) for uri in uris_raw]
+    await spotify_service.play(
+        ctx.session,
+        ctx.user_id,
+        uris=uris,
+        context_uri=(
+            str(arguments["context_uri"]) if "context_uri" in arguments else None
+        ),
+        device_id=str(arguments["device_id"]) if "device_id" in arguments else None,
+    )
+    return {"ok": True}
+
+
+async def _pause(ctx: ToolContext, arguments: dict[str, Any]) -> dict[str, Any]:
+    await spotify_service.pause(
+        ctx.session,
+        ctx.user_id,
+        device_id=str(arguments["device_id"]) if "device_id" in arguments else None,
+    )
+    return {"ok": True}
+
+
+async def _skip(ctx: ToolContext, arguments: dict[str, Any]) -> dict[str, Any]:
+    await spotify_service.skip_next(
+        ctx.session,
+        ctx.user_id,
+        device_id=str(arguments["device_id"]) if "device_id" in arguments else None,
+    )
+    return {"ok": True}
+
+
+async def _queue(ctx: ToolContext, arguments: dict[str, Any]) -> dict[str, Any]:
+    await spotify_service.queue_track(
+        ctx.session,
+        ctx.user_id,
+        uri=str(arguments["uri"]),
+        device_id=str(arguments["device_id"]) if "device_id" in arguments else None,
+    )
+    return {"ok": True}
+
+
 now_playing_tool = Tool(
     name="spotify_now_playing",
     description="Get the user's currently playing Spotify track, if any.",
@@ -56,5 +101,97 @@ search_tracks_tool = Tool(
     handler=_search_tracks,
 )
 
+play_tool = Tool(
+    name="spotify_play",
+    description=(
+        "Start Spotify playback. Provide either `uris` for specific tracks "
+        "or `context_uri` for an album/playlist."
+    ),
+    input_schema={
+        "type": "object",
+        "properties": {
+            "uris": {
+                "type": "array",
+                "items": {"type": "string"},
+                "description": "Track URIs to play.",
+            },
+            "context_uri": {
+                "type": "string",
+                "description": "Album or playlist URI to start.",
+            },
+            "device_id": {
+                "type": "string",
+                "description": "Optional Spotify device id.",
+            },
+        },
+        "additionalProperties": False,
+    },
+    bucket="deferred",
+    handler=_play,
+)
 
-SPOTIFY_TOOLS: list[Tool] = [now_playing_tool, search_tracks_tool]
+pause_tool = Tool(
+    name="spotify_pause",
+    description="Pause Spotify playback.",
+    input_schema={
+        "type": "object",
+        "properties": {
+            "device_id": {
+                "type": "string",
+                "description": "Optional Spotify device id.",
+            },
+        },
+        "additionalProperties": False,
+    },
+    bucket="deferred",
+    handler=_pause,
+)
+
+skip_tool = Tool(
+    name="spotify_skip",
+    description="Skip to the next Spotify track.",
+    input_schema={
+        "type": "object",
+        "properties": {
+            "device_id": {
+                "type": "string",
+                "description": "Optional Spotify device id.",
+            },
+        },
+        "additionalProperties": False,
+    },
+    bucket="deferred",
+    handler=_skip,
+)
+
+queue_tool = Tool(
+    name="spotify_queue",
+    description="Add a track URI to the Spotify queue.",
+    input_schema={
+        "type": "object",
+        "properties": {
+            "uri": {
+                "type": "string",
+                "description": "Track URI to queue.",
+            },
+            "device_id": {
+                "type": "string",
+                "description": "Optional Spotify device id.",
+            },
+        },
+        "required": ["uri"],
+        "additionalProperties": False,
+    },
+    bucket="deferred",
+    handler=_queue,
+)
+
+
+SPOTIFY_TOOLS: list[Tool] = [
+    now_playing_tool,
+    search_tracks_tool,
+    play_tool,
+    pause_tool,
+    skip_tool,
+    queue_tool,
+]

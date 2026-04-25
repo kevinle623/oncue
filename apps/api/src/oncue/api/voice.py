@@ -20,6 +20,7 @@ from oncue.adapters.telephony import twilio as twilio_adapter
 from oncue.repositories import call_repo
 from oncue.services import call_service, voice_session_service
 from oncue.settings import settings
+from oncue.workers import enqueue_call_completion
 
 router = APIRouter(prefix="/voice", tags=["voice"])
 
@@ -84,10 +85,12 @@ async def status(
     ended_at = (
         datetime.now(UTC) if call_status in call_service.TERMINAL_STATUSES else None
     )
-    await call_service.update_status(
+    updated_call = await call_service.update_status(
         session, call_sid=call_sid, status=call_status, ended_at=ended_at
     )
     await session.commit()
+    if call_status == "completed" and updated_call is not None:
+        enqueue_call_completion(call_sid)
     return Response(status_code=204)
 
 

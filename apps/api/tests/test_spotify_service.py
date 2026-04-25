@@ -117,3 +117,86 @@ async def test_get_fresh_access_token_raises_when_not_connected(
             session=None,  # type: ignore[arg-type]
             user_id=uuid.uuid4(),
         )
+
+
+async def test_play_uses_fresh_token_and_calls_adapter(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    user_id = uuid.uuid4()
+    seen: dict[str, object] = {}
+
+    async def fake_token(_session: object, _user_id: uuid.UUID) -> str:
+        return "fresh-token"
+
+    async def fake_start(
+        access_token: str,
+        *,
+        uris: list[str] | None = None,
+        context_uri: str | None = None,
+        device_id: str | None = None,
+    ) -> None:
+        seen["access_token"] = access_token
+        seen["uris"] = uris
+        seen["context_uri"] = context_uri
+        seen["device_id"] = device_id
+
+    monkeypatch.setattr(spotify_service, "get_fresh_access_token", fake_token)
+    monkeypatch.setattr(spotify_adapter, "start_playback", fake_start)
+
+    await spotify_service.play(
+        session=None,  # type: ignore[arg-type]
+        user_id=user_id,
+        uris=["spotify:track:1"],
+        device_id="dev1",
+    )
+
+    assert seen == {
+        "access_token": "fresh-token",
+        "uris": ["spotify:track:1"],
+        "context_uri": None,
+        "device_id": "dev1",
+    }
+
+
+async def test_pause_skip_and_queue_use_fresh_token(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    user_id = uuid.uuid4()
+    tokens_seen: list[str] = []
+    queue_args: dict[str, str | None] = {}
+
+    async def fake_token(_session: object, _user_id: uuid.UUID) -> str:
+        return "fresh-token"
+
+    async def fake_pause(access_token: str, *, device_id: str | None = None) -> None:
+        tokens_seen.append(access_token)
+
+    async def fake_skip(access_token: str, *, device_id: str | None = None) -> None:
+        tokens_seen.append(access_token)
+
+    async def fake_queue(
+        access_token: str,
+        uri: str,
+        *,
+        device_id: str | None = None,
+    ) -> None:
+        tokens_seen.append(access_token)
+        queue_args["uri"] = uri
+        queue_args["device_id"] = device_id
+
+    monkeypatch.setattr(spotify_service, "get_fresh_access_token", fake_token)
+    monkeypatch.setattr(spotify_adapter, "pause_playback", fake_pause)
+    monkeypatch.setattr(spotify_adapter, "skip_to_next", fake_skip)
+    monkeypatch.setattr(spotify_adapter, "add_to_queue", fake_queue)
+
+    await spotify_service.pause(session=None, user_id=user_id)  # type: ignore[arg-type]
+    await spotify_service.skip_next(session=None, user_id=user_id)  # type: ignore[arg-type]
+    await spotify_service.queue_track(  # type: ignore[arg-type]
+        session=None,
+        user_id=user_id,
+        uri="spotify:track:99",
+        device_id="dev2",
+    )
+
+    assert tokens_seen == ["fresh-token", "fresh-token", "fresh-token"]
+    assert queue_args == {"uri": "spotify:track:99", "device_id": "dev2"}

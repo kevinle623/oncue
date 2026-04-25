@@ -12,6 +12,7 @@ from oncue.tools.base import (
     ToolNotAllowedError,
     UnknownToolError,
     build_registry,
+    dispatch_deferred,
     dispatch_immediate,
 )
 
@@ -19,7 +20,12 @@ from oncue.tools.base import (
 def test_registry_contains_spotify_tools() -> None:
     assert "spotify_now_playing" in tools_pkg.REGISTRY
     assert "spotify_search_tracks" in tools_pkg.REGISTRY
+    assert "spotify_play" in tools_pkg.REGISTRY
+    assert "spotify_pause" in tools_pkg.REGISTRY
+    assert "spotify_skip" in tools_pkg.REGISTRY
+    assert "spotify_queue" in tools_pkg.REGISTRY
     assert tools_pkg.REGISTRY["spotify_now_playing"].bucket == "immediate"
+    assert tools_pkg.REGISTRY["spotify_play"].bucket == "deferred"
 
 
 def test_build_registry_rejects_duplicates() -> None:
@@ -86,3 +92,9 @@ async def test_dispatch_immediate_rejects_deferred_tool() -> None:
     ctx = ToolContext(session=None, user_id=uuid.uuid4())  # type: ignore[arg-type]
     with pytest.raises(ToolNotAllowedError):
         await dispatch_immediate(registry, ctx, "deferred_op", {})
+
+
+async def test_dispatch_deferred_rejects_immediate_tool() -> None:
+    ctx = ToolContext(session=None, user_id=uuid.uuid4())  # type: ignore[arg-type]
+    with pytest.raises(ToolNotAllowedError):
+        await dispatch_deferred(tools_pkg.REGISTRY, ctx, "spotify_now_playing", {})

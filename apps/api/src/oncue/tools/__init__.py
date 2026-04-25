@@ -4,6 +4,7 @@ from oncue.tools.base import (
     ToolNotAllowedError,
     UnknownToolError,
     build_registry,
+    dispatch_deferred,
     dispatch_immediate,
 )
 from oncue.tools.spotify import SPOTIFY_TOOLS
@@ -19,5 +20,6 @@ __all__ = [
     "ToolNotAllowedError",
     "UnknownToolError",
     "build_registry",
+    "dispatch_deferred",
     "dispatch_immediate",
 ]

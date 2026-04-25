@@ -72,37 +72,58 @@ All Twilio webhooks must validate the `X-Twilio-Signature` header before process
 Track progress here. Update as work lands.
 
 ### Done
-- Models: `user`, `spotify_account`, `call`, `call_turn`, `deferred_tool_job`
-- Spotify OAuth: `/spotify/authorize` and `/spotify/callback` (Redis-backed state)
-- Spotify adapter: auth URL, code exchange, refresh, playback HTTP wrappers (currently-playing, search, play, pause, skip, queue) + `SpotifyAPIError`
-- Spotify service: `get_fresh_access_token` (skew-aware refresh + persist), `now_playing`, `search_tracks`
-- DTOs: `TrackDTO`, `NowPlayingDTO`
-- Tools registry: `tools/base.py` (`Tool`, `ToolContext`, `dispatch_immediate` enforces immediate-only during calls)
-- Immediate Spotify tools: `spotify_now_playing`, `spotify_search_tracks`
-- LLM adapter (`adapters/llm/anthropic.py`): SDK-agnostic types (`LLMMessage`, `LLMTool`, `LLMResponse`, content blocks) wrapping `AsyncAnthropic.messages.create`. Default model `claude-haiku-4-5-20251001`.
-- Conversation service (`services/conversation_service.py`): `run_turn(ctx, user_text, history)` — loops LLM call → `dispatch_immediate` → tool_result → repeat until text response. Exposes only immediate tools. Iteration cap.
-- Tests: adapter (httpx MockTransport), service token-refresh, tool dispatch, conversation loop (no-tool, tool_use, tool error, iteration cap). `pytest-asyncio` auto mode configured.
-
-- Telephony adapter (`adapters/telephony/twilio.py`): `validate_signature` (RequestValidator) and `build_voice_twiml` (greeting + `<Connect><Stream>` with `call_sid` parameter; auto-converts http→ws scheme).
-- Call DTOs + repo (`dtos/call.py`, `repositories/call_repo.py`): `get_by_sid`, `create`, `update_status`.
-- Call service (`services/call_service.py`): `register_incoming_call` (idempotent on sid, creates user via phone), `update_status`, `TERMINAL_STATUSES`.
-- Voice routes (`api/voice.py`): `POST /voice/incoming` validates Twilio signature → registers call → returns TwiML; `POST /voice/status` updates status (sets `ended_at` on terminal). Mounted in `main.create_app`.
-- Settings: `app_base_url`, `twilio_validate_signature` flag (also in `.env.example`).
-- mypy override added for `twilio.*` (no stubs shipped).
-- Tests added: twilio adapter (signature ok/tampered, TwiML shape, wss derivation), voice routes (incoming TwiML + persistence, missing fields → 400, status terminal vs in-progress, bad signature → 403).
-
-- STT adapter (`adapters/stt/deepgram.py`): `open_session` async ctx mgr → `STTSession` (`send_audio`, `transcripts()` async iterator yielding `Transcript(text, is_final)`, idempotent `close` sends Deepgram `CloseStream`). Uses `websockets` (bundled via `uvicorn[standard]`) directly — Deepgram SDK not used.
-- TTS adapter (`adapters/tts/elevenlabs.py`): `synthesize(text, voice_id?, model_id?, output_format="ulaw_8000")` async iterator yielding raw audio chunks via `httpx.AsyncClient.stream`. ElevenLabs SDK not used.
-- CallTurn DTO + repo (`dtos/call_turn.py`, `repositories/call_turn_repo.py`): `create`, `list_by_call` (ordered by `created_at`).
-- Settings: `elevenlabs_voice_id` (default Rachel `21m00Tcm4TlvDq8ikWAM`).
-- Tests: STT (`_parse_transcript`, URL builder, fake-WS session yields/send/close/idempotency); TTS (mock-httpx request shape + chunk streaming, error propagation).
+- Models: `user`, `spotify_account`, `call`, `call_turn`, `deferred_tool_job`.
+- DTOs/repos:
+  - calls: `dtos/call.py`, `repositories/call_repo.py` (`get_by_id`, `get_by_sid`, `create`, `update_status`)
+  - call turns: `dtos/call_turn.py`, `repositories/call_turn_repo.py`
+  - deferred jobs: `dtos/deferred_tool_job.py`, `repositories/deferred_tool_job_repo.py`
+- Spotify auth + token lifecycle:
+  - routes: `/spotify/authorize`, `/spotify/callback` (Redis-backed state)
+  - adapter: auth URL, code exchange, refresh, playback wrappers + `SpotifyAPIError`
+  - service: `get_fresh_access_token`, `now_playing`, `search_tracks`, `play`, `pause`, `skip_next`, `queue_track`
+- Tools:
+  - registry + dispatch: `dispatch_immediate`, `dispatch_deferred`
+  - immediate: `spotify_now_playing`, `spotify_search_tracks`
+  - deferred: `spotify_play`, `spotify_pause`, `spotify_skip`, `spotify_queue`
+- Conversation service (`services/conversation_service.py`):
+  - `run_turn(ctx, user_text, history)` supports both immediate and deferred tool calls
+  - deferred tool calls are queued as `deferred_tool_jobs` and returned to the LLM as queued tool results
+  - iteration cap enforced
+- Telephony + voice routes:
+  - Twilio adapter validates signatures and builds TwiML with `<Connect><Stream>`
+  - `POST /voice/incoming` registers call + returns TwiML
+  - `POST /voice/status` updates call status and enqueues deferred tool execution on `completed`
+  - `WS /voice/stream` bridges Twilio media frames ↔ STT ↔ conversation ↔ TTS and persists `CallTurn` rows
+- Deferred execution pipeline:
+  - Redis queue keyed by `CallSid` stores deferred job IDs
+  - Celery app/task in `workers/` drains + executes queued jobs ~4s after completion webhook
+  - job status transitions: `pending` → `succeeded` / `failed` with `executed_at` + `error`
+- STT/TTS adapters:
+  - Deepgram streaming via `websockets` (SDK not used)
+  - ElevenLabs streaming via `httpx` (SDK not used)
+- Settings:
+  - `app_base_url`, `twilio_validate_signature`, `elevenlabs_voice_id` documented in settings + `.env.example`
+- Tests:
+  - adapter/service/tool/conversation coverage
+  - voice routes + voice stream route coverage
+  - deferred tool service coverage
 
 ### Remaining
-- **Voice WebSocket handler**: no `/voice/stream` endpoint yet. Needs to bridge Twilio Media Streams ↔ Deepgram (STT) ↔ `conversation_service.run_turn` ↔ ElevenLabs (TTS), and persist `CallTurn` rows per turn. Twilio frames are base64-encoded μ-law in JSON `media` events; outbound expects the same shape.
 - **Unused SDK deps**: `deepgram-sdk` and `elevenlabs` are listed in `pyproject.toml` but not used (we went direct via `websockets` + `httpx`). Candidate for removal in a cleanup pass.
-- **Deferred tools**: register Spotify mutation tools (`play`, `pause`, `skip`, `queue`) as `bucket="deferred"`. Adapter HTTP wrappers already exist.
-- **Workers** (`workers/`): empty. Needs Celery app, Redis queue keyed by `CallSid`, and a task that drains the queue ~4s after Twilio `call-status=completed`.
-- **`deferred_tool_job` repo**: model exists, repository not written.
+- **Worker ops**: add a short operational runbook (commands, logs, and basic smoke checks) for running API + worker locally.
+- **Deferred retry policy**: current behavior marks job `failed` on first exception; decide if retries/backoff are needed.
+
+## Local Runbook
+
+```sh
+# terminal 1: API
+cd apps/api
+poetry run uvicorn oncue.main:app --reload --app-dir src
+
+# terminal 2: Celery worker
+cd apps/api
+poetry run celery -A oncue.workers.celery_app:celery_app worker --loglevel=info
+```
 
 ## Before Declaring Done
 
