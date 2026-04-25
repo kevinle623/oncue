@@ -1,7 +1,7 @@
 import uuid
 from datetime import datetime
 
-from sqlalchemy import Select, select
+from sqlalchemy import Select, and_, or_, select, update
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from oncue.dtos.deferred_tool_job import DeferredToolJobCreateDTO, DeferredToolJobDTO
@@ -51,6 +51,74 @@ async def list_pending_due_by_ids(
     )
     result = await session.execute(query)
     return [DeferredToolJobDTO.model_validate(row) for row in result.scalars().all()]
+
+
+async def list_due_pending_or_stale_processing_for_call(
+    session: AsyncSession,
+    *,
+    call_id: uuid.UUID,
+    scheduled_before: datetime,
+    processing_stale_before: datetime,
+) -> list[DeferredToolJobDTO]:
+    query: Select[tuple[DeferredToolJob]] = (
+        select(DeferredToolJob)
+        .where(DeferredToolJob.call_id == call_id)
+        .where(
+            or_(
+                and_(
+                    DeferredToolJob.status == "pending",
+                    DeferredToolJob.scheduled_for <= scheduled_before,
+                ),
+                and_(
+                    DeferredToolJob.status == "processing",
+                    DeferredToolJob.executed_at.is_not(None),
+                    DeferredToolJob.executed_at <= processing_stale_before,
+                ),
+            )
+        )
+        .order_by(DeferredToolJob.scheduled_for, DeferredToolJob.created_at)
+    )
+    result = await session.execute(query)
+    return [DeferredToolJobDTO.model_validate(row) for row in result.scalars().all()]
+
+
+async def claim_for_execution(
+    session: AsyncSession,
+    *,
+    job_id: uuid.UUID,
+    scheduled_before: datetime,
+    processing_stale_before: datetime,
+    claimed_at: datetime,
+) -> DeferredToolJobDTO | None:
+    stmt = (
+        update(DeferredToolJob)
+        .where(DeferredToolJob.id == job_id)
+        .where(
+            or_(
+                and_(
+                    DeferredToolJob.status == "pending",
+                    DeferredToolJob.scheduled_for <= scheduled_before,
+                ),
+                and_(
+                    DeferredToolJob.status == "processing",
+                    DeferredToolJob.executed_at.is_not(None),
+                    DeferredToolJob.executed_at <= processing_stale_before,
+                ),
+            )
+        )
+        .values(
+            status="processing",
+            executed_at=claimed_at,
+            error=None,
+        )
+        .returning(DeferredToolJob)
+    )
+    result = await session.execute(stmt)
+    job = result.scalar_one_or_none()
+    if job is None:
+        return None
+    await session.flush()
+    return DeferredToolJobDTO.model_validate(job)
 
 
 async def mark_succeeded(

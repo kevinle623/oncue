@@ -95,9 +95,11 @@ Track progress here. Update as work lands.
   - `POST /voice/status` updates call status and enqueues deferred tool execution on `completed`
   - `WS /voice/stream` bridges Twilio media frames ↔ STT ↔ conversation ↔ TTS and persists `CallTurn` rows
 - Deferred execution pipeline:
-  - Redis queue keyed by `CallSid` stores deferred job IDs
-  - Celery app/task in `workers/` drains + executes queued jobs ~4s after completion webhook
-  - job status transitions: `pending` → `succeeded` / `failed` with `executed_at` + `error`
+  - Redis queue keyed by `CallSid` stores deferred job IDs as a scheduling hint
+  - DB is source of truth for due jobs; worker can execute due jobs even if Redis enqueue fails
+  - Celery app/task in `workers/` executes deferred jobs ~4s after completion webhook
+  - atomic claim for execution (`pending` or stale `processing`), then mark `succeeded` / `failed`
+  - stale `processing` jobs are reclaimable after timeout to recover from interrupted workers
 - STT/TTS adapters:
   - Deepgram streaming via `websockets` (SDK not used)
   - ElevenLabs streaming via `httpx` (SDK not used)
@@ -111,7 +113,7 @@ Track progress here. Update as work lands.
 ### Remaining
 - **Unused SDK deps**: `deepgram-sdk` and `elevenlabs` are listed in `pyproject.toml` but not used (we went direct via `websockets` + `httpx`). Candidate for removal in a cleanup pass.
 - **Worker ops**: add a short operational runbook (commands, logs, and basic smoke checks) for running API + worker locally.
-- **Deferred retry policy**: current behavior marks job `failed` on first exception; decide if retries/backoff are needed.
+- **Deferred retry policy**: current behavior reclaims stale `processing` jobs, but functional retries/backoff by error type are not implemented.
 
 ## Local Runbook
 

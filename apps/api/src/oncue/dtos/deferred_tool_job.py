@@ -4,7 +4,7 @@ from typing import Any, Literal
 
 from pydantic import BaseModel, ConfigDict
 
-DeferredToolJobStatus = Literal["pending", "succeeded", "failed"]
+DeferredToolJobStatus = Literal["pending", "processing", "succeeded", "failed"]
 
 
 class DeferredToolJobDTO(BaseModel):
