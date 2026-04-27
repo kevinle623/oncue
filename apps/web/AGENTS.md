@@ -35,7 +35,7 @@ Note: Next.js 16 removed `next lint`. Use `bun run lint` which invokes ESLint di
 components/
   ui/         shadcn primitives only (button, card, …)
   layout/     nav, footer, doc-page
-  sections/   one file per landing-page section (hero, hero-visual, how-it-works, integrations, why-hands-free, privacy, faq, waitlist-cta)
+  sections/   one file per landing-page section (hero, hero-visual, how-it-works, integrations, why-hands-free, privacy, faq, get-started-cta)
   common/     reusable building blocks (container, section, divider, wordmark, section-label, display-heading, section-body, primary-button, reveal)
   icons/      inline SVG icon components
     brand/    third-party brand glyphs (e.g. spotify)
@@ -51,7 +51,7 @@ Reach for something in `common/` before adding a new one-off. If three callsites
 - `SectionLabel` — 11px uppercase tracking-[0.18em] eyebrow.
 - `SectionBody` — muted intro paragraph.
 - `Wordmark` — split-opacity `on` + `Cue` in italic Instrument Serif. `size="sm" | "md" | "lg"`.
-- `PrimaryButton` — accent-on-cream CTA. Pass `href` for an internal link, otherwise renders a `<button>`. `size="sm" | "md"`.
+- `PrimaryButton` — accent-on-cream CTA. Pass `href` for a link (external URLs auto open in a new tab), otherwise renders a `<button>`. `size="sm" | "md"`. When `href` ends in a hash and the target element exists on the current page, the click is intercepted and smooth-scrolled so re-clicking the same hash still scrolls.
 - `Reveal` — IntersectionObserver-driven fade/translate-up. Use `delay` (ms) for staggered children.
 - `Divider` — 1px max-w-1080 horizontal rule between hero and how-it-works.
 
@@ -72,9 +72,18 @@ Route files (`page.tsx`, `layout.tsx`) must stay thin. They compose components, 
 
 ## Conventions
 
-- CTAs use the `CtaButton` primitive. Pass `disabled` when the destination isn't shipped yet — it renders a dimmed "Coming soon" affordance instead of a live link.
+- CTAs use the `PrimaryButton` primitive.
 - Nav anchor hrefs are absolute (`/#how`) so they work identically from sub-pages and the home page.
 - Interactive elements (buttons, links, clickable cards) must show `cursor: pointer` — the base layer in `globals.css` handles this globally; if you add a custom interactive element that isn't a `button`, `a`, or `[role="button"]`, add `cursor-pointer` explicitly.
+
+## Landing Page Messaging
+
+The current positioning is **"open source today, hosted product coming."** Two ways to use OnCue:
+
+1. **Today** — clone the repo, plug in your own provider keys (Twilio, Deepgram, ElevenLabs, Anthropic, Spotify), self-host. The hero CTA ("Run it yourself") and the `GetStartedCta` section both lead here. Repo README is the destination.
+2. **Eventually** — a hosted version with a full UI. Listed as the first roadmap item ("Hosted app (no setup) — Soon") in `Integrations`. No waitlist signup exists yet; do not invent one in copy.
+
+Spotify is the only live integration. Apple Music is intentionally not on the roadmap (Siri + CarPlay already covers it). Keep copy honest about what's real today vs. what's coming.
 
 ## Before Declaring Done
 
