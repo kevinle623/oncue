@@ -14,9 +14,11 @@ const LINKS = [
 export function Footer() {
   return (
     <footer className="border-border border-t">
-      <div className="mx-auto flex max-w-[1080px] flex-col gap-6 px-6 py-12 md:flex-row md:items-center md:justify-between">
-        <Wordmark size="sm" />
-        <nav className="flex flex-wrap gap-7">
+      <div className="mx-auto flex max-w-[1080px] flex-col items-center gap-6 px-6 py-12 md:grid md:grid-cols-3 md:gap-4">
+        <div className="md:justify-self-start">
+          <Wordmark size="sm" />
+        </div>
+        <nav className="flex flex-wrap justify-center gap-7 md:justify-self-center">
           {LINKS.map((link) => (
             <Link
               key={link.href}
@@ -30,7 +32,7 @@ export function Footer() {
             </Link>
           ))}
         </nav>
-        <span className="text-muted-foreground text-xs">
+        <span className="text-muted-foreground text-xs md:justify-self-end">
           © 2026 OnCue. All rights reserved.
         </span>
       </div>
