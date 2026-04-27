@@ -39,11 +39,15 @@ export const PrimaryButton = forwardRef<
   const merged = cn(baseClass, sizeClass[size], className);
 
   if ("href" in props && props.href) {
+    const isExternal = /^https?:\/\//.test(props.href);
     return (
       <Link
         ref={ref as React.Ref<HTMLAnchorElement>}
         href={props.href}
         className={merged}
+        {...(isExternal
+          ? { target: "_blank", rel: "noopener noreferrer" }
+          : {})}
       >
         {children}
       </Link>

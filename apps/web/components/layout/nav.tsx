@@ -28,8 +28,8 @@ export function Nav() {
       <Link href="/" aria-label="OnCue home">
         <Wordmark size="md" />
       </Link>
-      <PrimaryButton href="/#waitlist" size="sm">
-        Join waitlist
+      <PrimaryButton href="/#get-started" size="sm">
+        Get started
       </PrimaryButton>
     </nav>
   );
