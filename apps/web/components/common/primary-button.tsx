@@ -39,12 +39,34 @@ export const PrimaryButton = forwardRef<
   const merged = cn(baseClass, sizeClass[size], className);
 
   if ("href" in props && props.href) {
-    const isExternal = /^https?:\/\//.test(props.href);
+    const href = props.href;
+    const isExternal = /^https?:\/\//.test(href);
+    const hashMatch = href.match(/#([^?]+)$/);
+    const handleClick = hashMatch
+      ? (event: React.MouseEvent<HTMLAnchorElement>) => {
+          if (
+            event.metaKey ||
+            event.ctrlKey ||
+            event.shiftKey ||
+            event.altKey
+          ) {
+            return;
+          }
+          const target = document.getElementById(hashMatch[1]);
+          if (!target) return;
+          event.preventDefault();
+          target.scrollIntoView({ behavior: "smooth", block: "start" });
+          if (window.location.hash !== `#${hashMatch[1]}`) {
+            history.replaceState(null, "", `#${hashMatch[1]}`);
+          }
+        }
+      : undefined;
     return (
       <Link
         ref={ref as React.Ref<HTMLAnchorElement>}
-        href={props.href}
+        href={href}
         className={merged}
+        onClick={handleClick}
         {...(isExternal
           ? { target: "_blank", rel: "noopener noreferrer" }
           : {})}

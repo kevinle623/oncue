@@ -17,18 +17,18 @@ export function GetStartedCta() {
       <Container className="max-w-[560px] px-6">
         <Reveal>
           <DisplayHeading size="lg">
-            Want it now?
+            Two ways in.
             <br />
-            <em>Run it yourself.</em>
+            <em>One available today.</em>
           </DisplayHeading>
-          <p className="text-muted-foreground mx-auto mt-5 mb-11 max-w-[440px] text-base leading-[1.6] font-light">
-            OnCue is open source. Full UI is coming — until then, clone the
-            repo, plug in your own keys, and you have a working voice assistant
-            in an afternoon.
+          <p className="text-muted-foreground mx-auto mt-5 mb-11 max-w-[460px] text-base leading-[1.6] font-light">
+            OnCue is open source. Clone the repo, plug in your own keys, and
+            you have a working voice assistant in an afternoon. A hosted
+            version with a full UI is coming — sit tight or build now.
           </p>
           <PrimaryButton href={REPO_README}>Read the setup guide</PrimaryButton>
           <p className="text-muted-foreground mt-4 text-xs tracking-[0.04em]">
-            Open source &nbsp;·&nbsp; Self-host today
+            Self-host today &nbsp;·&nbsp; Hosted product coming
           </p>
         </Reveal>
       </Container>

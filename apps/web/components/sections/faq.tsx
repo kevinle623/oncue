@@ -12,8 +12,12 @@ type Item = { q: string; a: string };
 
 const ITEMS: Item[] = [
   {
-    q: "How much does OnCue cost?",
-    a: "Free during the beta. After launch, there'll be a simple monthly plan. Waitlist members get an extended free period and locked-in early pricing.",
+    q: "How do I use it right now?",
+    a: "OnCue is open source. Clone the repo, plug in your own keys for Twilio, Deepgram, ElevenLabs, Anthropic, and Spotify, and you have a working voice assistant in an afternoon. A hosted version with a full UI is in the works — until then, self-host is the way.",
+  },
+  {
+    q: "How much will it cost?",
+    a: "Self-hosting is free; you only pay the underlying providers for what you use. The hosted version will have a simple monthly plan when it launches.",
   },
   {
     q: "Does it work on any phone?",
@@ -33,7 +37,7 @@ const ITEMS: Item[] = [
   },
   {
     q: "What languages are supported?",
-    a: "English at launch, with Spanish, French, and German in active development. Waitlist members will get early access to new language releases.",
+    a: "English today. Spanish, French, and German are next on the roadmap.",
   },
 ];
 

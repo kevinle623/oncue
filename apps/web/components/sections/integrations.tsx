@@ -9,7 +9,7 @@ import { SpotifyBadge } from "@/components/icons/brand/spotify";
 type RoadmapItem = { name: string; tag: string; live?: boolean };
 
 const ROADMAP: RoadmapItem[] = [
-  { name: "Apple Music", tag: "Soon", live: true },
+  { name: "Hosted app (no setup)", tag: "Soon", live: true },
   { name: "Trip Planning", tag: "2026" },
   { name: "Food & Coffee Orders", tag: "2026" },
   { name: "Smart Home", tag: "Later" },
@@ -27,9 +27,8 @@ export function Integrations() {
             The rest is coming.
           </DisplayHeading>
           <SectionBody className="mt-5">
-            Spotify is live. We&apos;re adding more integrations through 2025 —
-            not because we&apos;re slow, but because each one has to work
-            perfectly before it ships.
+            Spotify is live in the open-source build. More integrations land as
+            they&apos;re ready — each one has to work perfectly before it ships.
           </SectionBody>
         </Reveal>
 
