@@ -96,6 +96,23 @@ Route files (`page.tsx`, `layout.tsx`) must stay thin. They compose components, 
 - Nav anchor hrefs are absolute (`/#how`) so they work identically from sub-pages and the home page.
 - Interactive elements (buttons, links, clickable cards) must show `cursor: pointer` — the base layer in `globals.css` handles this globally; if you add a custom interactive element that isn't a `button`, `a`, or `[role="button"]`, add `cursor-pointer` explicitly.
 
+## Implementation Status
+
+Track progress here. Update as work lands.
+
+### Done
+- Marketing landing page at `/` with hero, how-it-works, integrations, why-hands-free, privacy, faq, get-started CTA.
+- Sub-pages: `/privacy`, `/terms`, `/docs` (composed via `DocPage`).
+- Design system primitives in `components/common/` (see list above).
+- Route groups: `(marketing)/` holds all public routes. `(app)/` is reserved for the authed product and does not exist yet.
+- Positioning: "open source today, hosted product coming." Hero CTA and `GetStartedCta` both link to the GitHub repo README.
+
+### Next up
+- **Repo README.** The landing CTA terminates at `https://github.com/kevinle623/oncue#readme`. Lift the install runbook from `apps/api/AGENTS.md` into the README so a stranger can self-host in ~30 minutes. This is the bottleneck right now.
+- **Cold-clone test.** Run the README on a fresh machine, fix every doc gap.
+- **Audio demo on the hero.** 15-second clip embedded in `HeroVisual` or click-to-play.
+- **Hosted MVP scaffolding.** When ready, scaffold `(app)/` route group with Clerk middleware + a stub `(app)/dashboard/page.tsx`. Architecture decision is committed: same Next.js app, route groups, JWT-verified calls into `apps/api`. No new monorepo package.
+
 ## Landing Page Messaging
 
 The current positioning is **"open source today, hosted product coming."** Two ways to use OnCue:

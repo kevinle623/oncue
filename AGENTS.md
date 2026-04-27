@@ -17,6 +17,14 @@ Twilio (telephony), Deepgram (STT), ElevenLabs (TTS), Anthropic (LLM + tool call
 
 Google Stitch generates HTML mockups under `apps/web/design-reference/stitch/<folder>/`. Translate to idiomatic Next.js + shadcn/ui + Tailwind. Design reference is read-only, never shipped.
 
+## Direction
+
+The open-source self-host story is feature-complete. The next phase is a hosted product (web UI so users don't have to run their own infra).
+
+Architectural decision: the hosted product lives in `apps/web/app/(app)/` as a route group alongside the existing `(marketing)/` group — same Next.js app, same design system, one deploy. **Not** a new monorepo package. `apps/api` stays the source of truth for all business logic; the dashboard is a thin client that calls FastAPI with a JWT (Clerk or similar).
+
+App-level "next up" lists live in `apps/web/AGENTS.md` and `apps/api/AGENTS.md` under "Implementation Status." Update those as work lands; do not maintain a long-lived roadmap here — it goes stale.
+
 ## Preferences
 
 - Concise, direct communication, no em-dashes

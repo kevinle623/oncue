@@ -143,7 +143,7 @@ poetry run celery -A oncue.workers.celery_app:celery_app worker --loglevel=info
 - API health: `curl -sf http://localhost:8000/health` → 200.
 - DB connectivity: API logs show no asyncpg connect errors on first request.
 - Redis connectivity: worker boot log shows `Connected to redis://...`.
-- Spotify auth round-trip: open `http://localhost:8000/v1/spotify/authorize?user_id=<uuid>` in a browser, complete consent, callback returns 200 and a `spotify_account` row is upserted.
+- Spotify auth round-trip: open `http://localhost:8000/v1/spotify/authorize?phone_number=+15551234567` in a browser (E.164 format, the number you'll call from), complete consent, callback returns 200 and a `users` + `spotify_accounts` row pair is upserted.
 - Deferred pipeline (no real call needed): insert a `deferred_tool_job` with `status=pending` and `not_before` in the past, then watch the worker log claim → execute → mark `succeeded`/`failed`.
 
 ### Where to look when something breaks

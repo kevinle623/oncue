@@ -31,7 +31,7 @@ export function Hero() {
         <div
           className={`flex flex-col items-center gap-[14px] ${fadeUp} [animation-delay:0.65s]`}
         >
-          <PrimaryButton href="#get-started">Run it yourself</PrimaryButton>
+          <PrimaryButton href="#get-started">Get started</PrimaryButton>
           <span className="text-muted-foreground text-xs tracking-[0.04em]">
             Open source today &nbsp;·&nbsp; Hosted product coming
           </span>

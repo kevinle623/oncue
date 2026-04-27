@@ -4,7 +4,7 @@ import { PrimaryButton } from "@/components/common/primary-button";
 import { Reveal } from "@/components/common/reveal";
 import { Section } from "@/components/common/section";
 
-const REPO_README = "https://github.com/kevinle623/oncue#readme";
+const REPO_README = "https://github.com/kevinle623/oncue#self-host-runbook";
 
 export function GetStartedCta() {
   return (
