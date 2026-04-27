@@ -91,17 +91,14 @@ function PhoneIcon() {
         strokeWidth="0.8"
         opacity="0.3"
       />
-      <text
-        x="28"
-        y="34"
-        textAnchor="middle"
-        fontFamily="Instrument Serif, serif"
-        fontSize="20"
-        fill="#1A1814"
+      <path
+        d="M35.5 31.2c-1.1 0-2.2-.18-3.25-.52a.92.92 0 0 0-.95.22l-2.05 2.06a13.85 13.85 0 0 1-6.2-6.2l2.05-2.07a.94.94 0 0 0 .23-.94 10.4 10.4 0 0 1-.52-3.25c0-.51-.42-.92-.93-.92H20.5a.92.92 0 0 0-.93.92c0 8.84 7.16 16 16 16 .5 0 .93-.41.93-.92v-3.45c0-.51-.42-.93-.93-.93Z"
+        stroke="#1A1814"
+        strokeWidth="1.4"
+        strokeLinecap="round"
+        strokeLinejoin="round"
         opacity="0.9"
-      >
-        ☎
-      </text>
+      />
     </svg>
   );
 }
