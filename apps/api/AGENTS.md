@@ -106,6 +106,7 @@ Track progress here. Update as work lands.
   - Celery app/task in `workers/` executes deferred jobs ~4s after completion webhook
   - atomic claim for execution (`pending` or stale `processing`), then mark `succeeded` / `failed`
   - stale `processing` jobs are reclaimable after timeout to recover from interrupted workers
+  - retry policy: transient failures (5xx, 429, 401, 408, network/timeout, generic exceptions) reschedule with exponential backoff + jitter, capped by `max_attempts` (default 3); permanent failures (`UnknownToolError`, `ToolNotAllowedError`, `DeferredToolExecutionError`, 4xx Spotify errors except the transient set) mark `failed` immediately. The Celery task re-enqueues itself with `countdown` matching the earliest retry ETA.
 - STT/TTS adapters:
   - Deepgram streaming via `websockets` (SDK not used)
   - ElevenLabs streaming via `httpx` (SDK not used)
@@ -117,21 +118,39 @@ Track progress here. Update as work lands.
   - deferred tool service coverage
 
 ### Remaining
-- **Unused SDK deps**: `deepgram-sdk` and `elevenlabs` are listed in `pyproject.toml` but not used (we went direct via `websockets` + `httpx`). Candidate for removal in a cleanup pass.
-- **Worker ops**: add a short operational runbook (commands, logs, and basic smoke checks) for running API + worker locally.
-- **Deferred retry policy**: current behavior reclaims stale `processing` jobs, but functional retries/backoff by error type are not implemented.
+- (none currently tracked here)
 
 ## Local Runbook
 
+### Prereqs
+
+1. `cp .env.example .env` and fill in provider keys (Twilio, Spotify, Deepgram, ElevenLabs, Anthropic). For local dev set `TWILIO_VALIDATE_SIGNATURE=false` if you're hitting webhooks without ngrok.
+2. Start infra: `docker compose up -d postgres redis` (from `apps/api/`).
+3. Apply migrations: `poetry run alembic upgrade head`.
+
+### Run
+
 ```sh
 # terminal 1: API
-cd apps/api
 poetry run uvicorn oncue.main:app --reload --app-dir src
 
-# terminal 2: Celery worker
-cd apps/api
+# terminal 2: Celery worker (executes deferred Spotify mutations)
 poetry run celery -A oncue.workers.celery_app:celery_app worker --loglevel=info
 ```
+
+### Smoke checks
+
+- API health: `curl -sf http://localhost:8000/health` → 200.
+- DB connectivity: API logs show no asyncpg connect errors on first request.
+- Redis connectivity: worker boot log shows `Connected to redis://...`.
+- Spotify auth round-trip: open `http://localhost:8000/v1/spotify/authorize?user_id=<uuid>` in a browser, complete consent, callback returns 200 and a `spotify_account` row is upserted.
+- Deferred pipeline (no real call needed): insert a `deferred_tool_job` with `status=pending` and `not_before` in the past, then watch the worker log claim → execute → mark `succeeded`/`failed`.
+
+### Where to look when something breaks
+
+- Twilio webhook 403 → `TWILIO_VALIDATE_SIGNATURE` mismatch (signing uses the public URL, so behind ngrok set `APP_BASE_URL` to the ngrok URL).
+- Worker silent → check Redis is reachable and that `deferred_tool_jobs.not_before <= now()`; the DB is the source of truth, Redis is only a scheduling hint.
+- STT/TTS hangs → adapters use `websockets`/`httpx` directly (the `deepgram-sdk` / `elevenlabs` packages are intentionally not installed); check provider API keys and outbound network.
 
 ## Before Declaring Done
 

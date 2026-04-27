@@ -17,6 +17,7 @@ async def create(
         args=data.args,
         status=data.status,
         scheduled_for=data.scheduled_for,
+        max_attempts=data.max_attempts,
     )
     session.add(job)
     await session.flush()
@@ -157,6 +158,31 @@ async def mark_failed(
     job.status = "failed"
     job.executed_at = executed_at
     job.error = error
+    job.attempts = job.attempts + 1
+    await session.flush()
+    await session.refresh(job)
+    return DeferredToolJobDTO.model_validate(job)
+
+
+async def mark_for_retry(
+    session: AsyncSession,
+    *,
+    job_id: uuid.UUID,
+    executed_at: datetime,
+    error: str,
+    next_scheduled_for: datetime,
+) -> DeferredToolJobDTO | None:
+    result = await session.execute(
+        select(DeferredToolJob).where(DeferredToolJob.id == job_id)
+    )
+    job = result.scalar_one_or_none()
+    if job is None:
+        return None
+    job.status = "pending"
+    job.executed_at = executed_at
+    job.error = error
+    job.attempts = job.attempts + 1
+    job.scheduled_for = next_scheduled_for
     await session.flush()
     await session.refresh(job)
     return DeferredToolJobDTO.model_validate(job)

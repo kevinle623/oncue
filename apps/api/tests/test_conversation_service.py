@@ -263,6 +263,8 @@ async def test_run_turn_queues_deferred_tool_and_continues(
             scheduled_for=now,
             executed_at=None,
             error=None,
+            attempts=0,
+            max_attempts=3,
             created_at=now,
         )
 

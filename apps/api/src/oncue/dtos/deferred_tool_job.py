@@ -18,6 +18,8 @@ class DeferredToolJobDTO(BaseModel):
     scheduled_for: datetime
     executed_at: datetime | None
     error: str | None
+    attempts: int
+    max_attempts: int
     created_at: datetime
 
 
@@ -27,3 +29,4 @@ class DeferredToolJobCreateDTO(BaseModel):
     args: dict[str, Any]
     status: DeferredToolJobStatus = "pending"
     scheduled_for: datetime
+    max_attempts: int = 3
