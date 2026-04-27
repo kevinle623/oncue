@@ -61,6 +61,26 @@ Reach for something in `common/` before adding a new one-off. If three callsites
 - Lucide icons for UI iconography. Brand logos are hand-authored monochrome SVGs under `icons/brand/` using `currentColor`.
 - Images go through `next/image`. Source files live in `public/images/`. For a soft-edge blend with the background use the `FadedImage` illustration wrapper.
 
+## Route Structure
+
+The App Router uses route groups to separate the public marketing surface from the (eventual) authed product surface:
+
+```
+app/
+  layout.tsx           — root layout (fonts, metadata, html/body shell)
+  not-found.tsx        — global 404
+  globals.css
+  icon.svg
+  (marketing)/         — public, statically rendered
+    page.tsx           — landing page
+    privacy/page.tsx
+    terms/page.tsx
+    docs/page.tsx
+  (app)/               — TODO: authed product (dashboard, calls, settings, billing). Add Clerk middleware when this lands.
+```
+
+Route groups (`(marketing)`, `(app)`) do not affect URLs. Marketing routes still resolve to `/`, `/privacy`, `/terms`, `/docs`.
+
 ## Modularization (Important)
 
 Route files (`page.tsx`, `layout.tsx`) must stay thin. They compose components, nothing more. All UI logic, sections, and visual structure live in dedicated component files under `components/`.
