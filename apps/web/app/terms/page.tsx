@@ -36,7 +36,16 @@ export default function TermsPage() {
 
       <h2>Contact</h2>
       <p>
-        Questions: <a href="mailto:hello@oncue.app">hello@oncue.app</a>.
+        Questions or concerns: open an issue at{" "}
+        <a
+          href="https://github.com/kevinle623/oncue/issues"
+          target="_blank"
+          rel="noopener noreferrer"
+        >
+          github.com/kevinle623/oncue/issues
+        </a>
+        . We&apos;re building in the open during beta — a dedicated contact
+        address will follow at launch.
       </p>
     </DocPage>
   );

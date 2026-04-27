@@ -1,43 +1,39 @@
 import Link from "next/link";
-import { Container } from "@/components/common/container";
-import { Wordmark } from "./wordmark";
+import { Wordmark } from "@/components/common/wordmark";
 
-const links = [
-  { label: "Privacy", href: "/privacy" },
-  { label: "Terms", href: "/terms" },
-  { label: "Docs", href: "/docs" },
+const LINKS = [
+  { href: "/privacy", label: "Privacy", external: false },
+  { href: "/terms", label: "Terms", external: false },
   {
-    label: "GitHub",
-    href: "https://github.com/kevinle623/oncue",
+    href: "https://github.com/kevinle623/oncue/issues",
+    label: "Contact",
     external: true,
   },
 ];
 
 export function Footer() {
   return (
-    <footer className="border-border bg-surface-lowest border-t">
-      <Container className="flex flex-col items-center justify-between gap-8 py-12 md:flex-row">
-        <div className="space-y-4 text-center md:text-left">
-          <Wordmark />
-          <p className="text-muted-foreground/70 max-w-xs text-sm">
-            © 2026 OnCue. All rights reserved.
-          </p>
-        </div>
-        <nav className="flex flex-wrap justify-center gap-x-8 gap-y-3">
-          {links.map((link) => (
+    <footer className="border-border border-t">
+      <div className="mx-auto flex max-w-[1080px] flex-col gap-6 px-6 py-12 md:flex-row md:items-center md:justify-between">
+        <Wordmark size="sm" />
+        <nav className="flex flex-wrap gap-7">
+          {LINKS.map((link) => (
             <Link
-              key={link.label}
+              key={link.href}
               href={link.href}
               {...(link.external
                 ? { target: "_blank", rel: "noopener noreferrer" }
                 : {})}
-              className="text-muted-foreground/70 hover:text-foreground text-sm transition-colors"
+              className="text-muted-foreground hover:text-foreground text-xs tracking-[0.06em] uppercase transition-colors"
             >
               {link.label}
             </Link>
           ))}
         </nav>
-      </Container>
+        <span className="text-muted-foreground text-xs">
+          © 2026 OnCue. All rights reserved.
+        </span>
+      </div>
     </footer>
   );
 }

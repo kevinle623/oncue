@@ -1,27 +1,28 @@
 import type { Metadata } from "next";
-import { Inter, Inter_Tight } from "next/font/google";
+import { DM_Sans, Instrument_Serif } from "next/font/google";
 import "./globals.css";
 
-const inter = Inter({
-  variable: "--font-inter",
+const dmSans = DM_Sans({
+  variable: "--font-body",
   subsets: ["latin"],
-  weight: ["400", "500", "600", "700"],
+  weight: ["300", "400", "500", "600"],
 });
 
-const interTight = Inter_Tight({
-  variable: "--font-inter-tight",
+const instrumentSerif = Instrument_Serif({
+  variable: "--font-display",
   subsets: ["latin"],
-  weight: ["700", "800", "900"],
+  weight: ["400"],
+  style: ["normal", "italic"],
 });
 
 export const metadata: Metadata = {
-  title: "OnCue — Everything, on cue.",
+  title: "OnCue — Hands-Free Voice Assistant for Drivers",
   description:
-    "Call a number. Say what you want. It happens. The definitive voice interface for drivers.",
+    "Drive. Speak. Everything onCue. A hands-free AI voice assistant for drivers.",
   openGraph: {
-    title: "OnCue — Everything, on cue.",
+    title: "OnCue — Hands-Free Voice Assistant for Drivers",
     description:
-      "Call a number. Say what you want. It happens. The definitive voice interface for drivers.",
+      "Drive. Speak. Everything onCue. A hands-free AI voice assistant for drivers.",
     images: ["/og.png"],
   },
 };
@@ -32,7 +33,7 @@ export default function RootLayout({
   return (
     <html
       lang="en"
-      className={`${inter.variable} ${interTight.variable} h-full antialiased`}
+      className={`${dmSans.variable} ${instrumentSerif.variable} h-full antialiased`}
     >
       <body className="flex min-h-full flex-col">{children}</body>
     </html>

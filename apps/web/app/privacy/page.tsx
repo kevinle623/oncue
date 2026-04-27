@@ -47,8 +47,16 @@ export default function PrivacyPage() {
 
       <h2>Your controls</h2>
       <p>
-        Email <a href="mailto:privacy@oncue.app">privacy@oncue.app</a> to export
-        your data, disconnect an integration, or delete your account.
+        To export your data, disconnect an integration, or delete your account
+        during beta, open an issue at{" "}
+        <a
+          href="https://github.com/kevinle623/oncue/issues"
+          target="_blank"
+          rel="noopener noreferrer"
+        >
+          github.com/kevinle623/oncue/issues
+        </a>
+        . A dedicated privacy address will follow at launch.
       </p>
     </DocPage>
   );

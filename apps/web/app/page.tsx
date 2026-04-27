@@ -1,10 +1,13 @@
+import { Divider } from "@/components/common/divider";
 import { Footer } from "@/components/layout/footer";
 import { Nav } from "@/components/layout/nav";
-import { FinalCta } from "@/components/sections/final-cta";
+import { Faq } from "@/components/sections/faq";
 import { Hero } from "@/components/sections/hero";
 import { HowItWorks } from "@/components/sections/how-it-works";
 import { Integrations } from "@/components/sections/integrations";
-import { UseCases } from "@/components/sections/use-cases";
+import { Privacy } from "@/components/sections/privacy";
+import { WaitlistCta } from "@/components/sections/waitlist-cta";
+import { WhyHandsFree } from "@/components/sections/why-hands-free";
 
 export default function Home() {
   return (
@@ -12,10 +15,14 @@ export default function Home() {
       <Nav />
       <main className="flex-1">
         <Hero />
+        <Divider />
         <HowItWorks />
-        <UseCases />
+        <Divider />
         <Integrations />
-        <FinalCta />
+        <WhyHandsFree />
+        <Privacy />
+        <Faq />
+        <WaitlistCta />
       </main>
       <Footer />
     </>

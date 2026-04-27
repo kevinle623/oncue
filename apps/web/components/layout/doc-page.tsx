@@ -1,7 +1,8 @@
 import { ArrowLeft } from "lucide-react";
 import Link from "next/link";
 import { Container } from "@/components/common/container";
-import { Eyebrow } from "@/components/common/eyebrow";
+import { DisplayHeading } from "@/components/common/display-heading";
+import { SectionLabel } from "@/components/common/section-label";
 import { Footer } from "@/components/layout/footer";
 import { Nav } from "@/components/layout/nav";
 
@@ -20,26 +21,26 @@ export function DocPage({
     <>
       <Nav />
       <main className="flex-1 pt-32 pb-24 md:pt-40">
-        <Container className="max-w-3xl">
+        <Container width="prose">
           <Link
             href="/"
-            className="text-muted-foreground hover:text-accent mb-10 inline-flex items-center gap-2 text-sm transition-colors"
+            className="text-muted-foreground hover:text-foreground mb-10 inline-flex items-center gap-2 text-sm transition-colors"
           >
             <ArrowLeft className="size-4" />
             Back to home
           </Link>
-          <div className="space-y-4">
-            <Eyebrow tone="accent">{eyebrow}</Eyebrow>
-            <h1 className="font-heading text-4xl font-black tracking-[-0.03em] md:text-6xl">
+          <div className="space-y-5">
+            <SectionLabel>{eyebrow}</SectionLabel>
+            <DisplayHeading as="h1" size="md">
               {title}
-            </h1>
+            </DisplayHeading>
             {updated && (
               <p className="text-muted-foreground text-sm">
                 Last updated {updated}
               </p>
             )}
           </div>
-          <div className="prose-doc mt-16 space-y-10 text-base leading-relaxed">
+          <div className="prose-doc mt-14 space-y-8 text-base leading-relaxed">
             {children}
           </div>
         </Container>

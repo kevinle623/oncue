@@ -1,53 +1,178 @@
 import { Container } from "@/components/common/container";
+import { DisplayHeading } from "@/components/common/display-heading";
+import { Reveal } from "@/components/common/reveal";
 import { Section } from "@/components/common/section";
-import { SectionHeading } from "@/components/common/section-heading";
-import { Card } from "@/components/ui/card";
+import { SectionLabel } from "@/components/common/section-label";
 
-const steps = [
+type Step = {
+  num: string;
+  title: string;
+  body: string;
+  icon: React.ReactNode;
+};
+
+const STEPS: Step[] = [
   {
-    n: "01",
-    title: "Connect",
-    body: "Save OnCue to your speed dial. No apps to open, no screens to unlock. A direct line to action.",
+    num: "01",
+    title: "Dial with your voice",
+    body: "\"Hey Siri, call OnCue.\" Any phone, any carrier, no internet — just a call. The voice agent you already have hands the rest to us.",
+    icon: <PhoneIcon />,
   },
   {
-    n: "02",
-    title: "Voice-Only",
-    body: "Speak naturally. Our neural engine filters road noise and understands context, intent, and nuance.",
+    num: "02",
+    title: "Speak naturally",
+    body: '"Play something chill." "Skip this track." "Turn it up." OnCue understands you the way you actually talk.',
+    icon: <WaveformIcon />,
   },
   {
-    n: "03",
-    title: "Execute",
-    body: "From messaging to navigation and smart home control. Everything happens instantly, on your command.",
+    num: "03",
+    title: "The assistant does it",
+    body: "Actions happen instantly. You get a brief audio confirmation and you're back to the road.",
+    icon: <CheckIcon />,
   },
 ];
 
 export function HowItWorks() {
   return (
-    <Section id="how" className="bg-surface-low">
+    <Section>
       <Container>
-        <SectionHeading eyebrow="Protocol" title="Intelligence in motion." />
-        <div className="bg-border mt-16 grid gap-px md:grid-cols-3">
-          {steps.map((step) => (
-            <Card
-              key={step.n}
-              className="bg-surface-low hover:bg-surface rounded-none border-0 px-10 py-10 ring-0 transition-colors"
+        <Reveal>
+          <SectionLabel>How it works</SectionLabel>
+          <DisplayHeading className="mt-5">
+            Three steps.
+            <br />
+            That&apos;s the whole thing.
+          </DisplayHeading>
+        </Reveal>
+        <div className="mt-16 grid grid-cols-1 md:grid-cols-3">
+          {STEPS.map((step, i) => (
+            <Reveal
+              key={step.num}
+              delay={i * 100}
+              className={[
+                "border-border border-t py-10 md:border-t-0 md:py-12",
+                i === 0
+                  ? "md:pr-10"
+                  : "md:border-l md:pr-10 md:pl-10 last:md:pr-0",
+              ].join(" ")}
             >
-              <span
-                aria-hidden
-                className="font-heading text-foreground/5 text-6xl font-black"
-              >
-                {step.n}
+              <span className="font-display text-accent mb-6 block text-[13px] tracking-[0.1em]">
+                {step.num}
               </span>
-              <h3 className="font-heading text-xl font-bold tracking-tight uppercase">
+              <div className="mb-7 size-14">{step.icon}</div>
+              <h3 className="font-display text-foreground mb-3.5 text-[28px] leading-[1.15]">
                 {step.title}
               </h3>
-              <p className="text-muted-foreground leading-relaxed">
+              <p className="text-muted-foreground text-[15px] leading-[1.65] font-light">
                 {step.body}
               </p>
-            </Card>
+            </Reveal>
           ))}
         </div>
       </Container>
     </Section>
+  );
+}
+
+function PhoneIcon() {
+  return (
+    <svg
+      viewBox="0 0 56 56"
+      fill="none"
+      xmlns="http://www.w3.org/2000/svg"
+      className="size-14"
+      aria-hidden
+    >
+      <circle
+        cx="28"
+        cy="28"
+        r="27"
+        stroke="#1A1814"
+        strokeWidth="0.8"
+        opacity="0.3"
+      />
+      <text
+        x="28"
+        y="34"
+        textAnchor="middle"
+        fontFamily="Instrument Serif, serif"
+        fontSize="20"
+        fill="#1A1814"
+        opacity="0.9"
+      >
+        ☎
+      </text>
+    </svg>
+  );
+}
+
+function WaveformIcon() {
+  const bars = [
+    { x: 14, y: 26, h: 4, o: 0.5 },
+    { x: 19, y: 22, h: 12, o: 0.7 },
+    { x: 24, y: 18, h: 20, o: 0.9 },
+    { x: 29, y: 21, h: 14, o: 0.8 },
+    { x: 34, y: 24, h: 8, o: 0.6 },
+    { x: 39, y: 27, h: 3, o: 0.4 },
+  ];
+  return (
+    <svg
+      viewBox="0 0 56 56"
+      fill="none"
+      xmlns="http://www.w3.org/2000/svg"
+      className="size-14"
+      aria-hidden
+    >
+      <circle
+        cx="28"
+        cy="28"
+        r="27"
+        stroke="#1A1814"
+        strokeWidth="0.8"
+        opacity="0.3"
+      />
+      {bars.map((b, i) => (
+        <rect
+          key={i}
+          x={b.x}
+          y={b.y}
+          width="3"
+          height={b.h}
+          fill="#1A1814"
+          opacity={b.o}
+          rx="1"
+        />
+      ))}
+    </svg>
+  );
+}
+
+function CheckIcon() {
+  return (
+    <svg
+      viewBox="0 0 56 56"
+      fill="none"
+      xmlns="http://www.w3.org/2000/svg"
+      className="size-14"
+      aria-hidden
+    >
+      <circle
+        cx="28"
+        cy="28"
+        r="27"
+        stroke="#1A1814"
+        strokeWidth="0.8"
+        opacity="0.3"
+      />
+      <polyline
+        points="17,28 25,36 39,20"
+        stroke="#1A1814"
+        strokeWidth="1.5"
+        strokeLinecap="round"
+        strokeLinejoin="round"
+        fill="none"
+        opacity="0.9"
+      />
+    </svg>
   );
 }
