@@ -72,11 +72,11 @@ export function HeroVisual() {
             strokeWidth="0.5"
             opacity="0.18"
           />
-          <circle r="5" fill="#1A1814" opacity="0.7">
+          <circle r="3" fill="#1A1814" opacity="0.2">
             <animate
               attributeName="opacity"
-              values="0.7;1;0.7"
-              dur="2s"
+              values="0.15;0.3;0.15"
+              dur="3.5s"
               repeatCount="indefinite"
             />
           </circle>
