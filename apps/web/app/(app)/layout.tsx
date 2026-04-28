@@ -1,9 +1,15 @@
 import { AppShell } from "@/components/layout/app-shell";
+import { getServerPreference } from "@/lib/server-preferences";
 
-export default function AppGroupLayout({
+export default async function AppGroupLayout({
   children,
 }: {
   children: React.ReactNode;
 }) {
-  return <AppShell>{children}</AppShell>;
+  const sidebarCollapsed =
+    (await getServerPreference("sidebar-collapsed")) === "true";
+
+  return (
+    <AppShell initialSidebarCollapsed={sidebarCollapsed}>{children}</AppShell>
+  );
 }

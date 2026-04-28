@@ -1,11 +1,12 @@
 import { cn } from "@/lib/utils";
 
-type Size = "sm" | "md" | "lg";
+type Size = "sm" | "md" | "lg" | "inherit";
 
 const sizeClass: Record<Size, string> = {
   sm: "text-xl",
   md: "text-2xl",
   lg: "text-3xl",
+  inherit: "",
 };
 
 export function Wordmark({

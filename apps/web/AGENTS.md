@@ -19,7 +19,7 @@ Note: Next.js 16 removed `next lint`. Use `bun run lint` which invokes ESLint di
 
 - Always read `components/ui/` to see which primitives are already installed before using one.
 - Run `bunx shadcn@latest add <name>` to add missing primitives. Never hand-roll what shadcn provides.
-- Currently installed: `button`, `card`.
+- Currently installed: `button`, `card`, `tooltip`.
 
 ## Styling
 
@@ -34,7 +34,7 @@ Note: Next.js 16 removed `next lint`. Use `bun run lint` which invokes ESLint di
 ```
 components/
   ui/         shadcn primitives only (button, card, …)
-  layout/     marketing shell (nav, footer, doc-page) and authed shell (app-shell, app-sidebar)
+  layout/     marketing shell (nav, footer, doc-page) and authed shell (app-shell, desktop-sidebar, mobile-header, mobile-tab-bar, nav-config)
   sections/   one file per landing-page section (hero, hero-visual, how-it-works, integrations, why-hands-free, privacy, faq, get-started-cta)
   screens/    one file per authed-product screen (dashboard, calls, settings, billing). Parallel to sections/ but for (app)/ routes.
   common/     reusable building blocks (container, section, divider, wordmark, section-label, display-heading, section-body, primary-button, reveal)
@@ -77,7 +77,7 @@ app/
     privacy/page.tsx
     terms/page.tsx
   (app)/               — authed product. Currently scaffolding only — no auth gating yet. Add Clerk middleware when an auth provider is wired in.
-    layout.tsx         — wraps children in AppShell (sidebar + main)
+    layout.tsx         — async server component; reads `sidebar-collapsed` cookie via `getServerPreference` and passes it to AppShell to avoid a flash on first paint.
     dashboard/page.tsx
     calls/page.tsx
     settings/page.tsx
@@ -118,6 +118,19 @@ Track progress here. Update as work lands.
 - **Audio demo on the hero.** 15-second clip embedded in `HeroVisual` or click-to-play.
 - **Pick an auth provider** (Clerk vs Supabase Auth vs Auth.js) and wire it into `(app)/` — middleware to gate the group, JWT verification dependency in `apps/api`. Architecture decision is committed: same Next.js app, route groups, JWT-verified calls into `apps/api`. No new monorepo package.
 - **First real screen content** once auth lands — dashboard "Connect Spotify" button (routes to existing `/v1/spotify/authorize?phone_number=…`) and call history list (reads `call_turn` rows via a new `GET /v1/calls` endpoint).
+
+## App Shell (authed product)
+
+`AppShell` is a client component that owns sidebar collapsed state. It composes:
+
+- `DesktopSidebar` — collapsible (`66px` ↔ `16rem`) with `transition-[width]`. Labels fade via opacity, the toggle icon (`PanelLeft`) rotates 180°. Tooltips on icons are *only* enabled after the collapse transition ends, so they don't fly in mid-animation.
+- `MobileHeader` — fixed top bar (wordmark + beta tag), `lg:hidden`.
+- `MobileTabBar` — fixed bottom nav, `lg:hidden`, respects `env(safe-area-inset-bottom)` for iOS home-indicator clearance.
+- `<main>` — `margin-left` animates with the sidebar width on desktop (`max-lg:!ml-0` strips it on mobile).
+
+State persistence: `lib/preferences.ts` writes to localStorage **and** a cookie (`oncue:sidebar-collapsed`). The cookie is read in `(app)/layout.tsx` via `lib/server-preferences.ts` so the SSR'd HTML matches the user's last preference. Add new persisted prefs by extending `PreferenceKey` and (if SSR-needed) the `SSR_KEYS` set.
+
+Nav items are defined once in `components/layout/nav-config.ts` and consumed by both desktop and mobile.
 
 ## Landing Page Messaging
 
