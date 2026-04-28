@@ -1,0 +1,770 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>onCue — Dashboard</title>
+  <link href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet" />
+  <script src="https://unpkg.com/react@18.3.1/umd/react.development.js" integrity="sha384-hD6/rw4ppMLGNu3tX5cjIb+uRZ7UkRJ6BPkLpg4hAu/6onKUg4lLsHAs9EBPT82L" crossorigin="anonymous"></script>
+  <script src="https://unpkg.com/react-dom@18.3.1/umd/react-dom.development.js" integrity="sha384-u6aeetuaXnQ38mYT8rp6sbXaQe3NL9t+IBXmnYxwkUI2Hw4bsp2Wvmx4yRQF1uAm" crossorigin="anonymous"></script>
+  <script src="https://unpkg.com/@babel/standalone@7.29.0/babel.min.js" integrity="sha384-m08KidiNqLdpJqLq95G/LEi8Qvjl/xUYll3QILypMoQ65QorJ9Lvtp2RXYGBFj1y" crossorigin="anonymous"></script>
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    html, body, #root { height: 100%; }
+    body { font-family: 'DM Sans', system-ui, sans-serif; background: #F4F1EB; color: #1A1814; -webkit-font-smoothing: antialiased; }
+
+    /* ── Sidebar ── */
+    .sb { width: 256px; flex-shrink: 0; background: #EDEAE3; border-right: 1px solid #D8D4CC; display: flex; flex-direction: column; height: 100vh; position: sticky; top: 0; }
+    .sb-top { padding: 20px 18px 16px; border-bottom: 1px solid #D8D4CC; }
+    .sb-wordmark { display: inline-flex; align-items: baseline; gap: 0; cursor: default; }
+    .sb-wm-on { font-family: 'Instrument Serif', serif; font-style: italic; font-size: 22px; opacity: 0.35; }
+    .sb-wm-cue { font-family: 'Instrument Serif', serif; font-style: italic; font-size: 22px; letter-spacing: -0.02em; }
+    .sb-nav { flex: 1; padding: 10px 8px; display: flex; flex-direction: column; gap: 2px; overflow-y: auto; }
+    .sb-item { display: flex; align-items: center; gap: 10px; padding: 9px 12px; border-radius: 6px; font-size: 14px; font-weight: 400; color: #787268; cursor: pointer; transition: background 0.15s, color 0.15s; border: none; background: none; text-align: left; width: 100%; }
+    .sb-item:hover { background: rgba(26,24,20,0.05); color: #1A1814; }
+    .sb-item.active { background: #EAF0EC; color: #4E7B61; font-weight: 500; }
+    .sb-item svg { width: 16px; height: 16px; flex-shrink: 0; }
+    .sb-section-label { font-size: 10px; font-weight: 500; letter-spacing: 0.14em; text-transform: uppercase; color: #B8B4AC; padding: 12px 12px 4px; }
+    .sb-bottom { padding: 12px 8px; border-top: 1px solid #D8D4CC; }
+    .sb-user { display: flex; align-items: center; gap: 10px; padding: 9px 12px; border-radius: 6px; }
+    .sb-avatar { width: 28px; height: 28px; border-radius: 50%; background: #4E7B61; display: flex; align-items: center; justify-content: center; font-size: 11px; font-weight: 600; color: #EAF0EC; flex-shrink: 0; }
+    .sb-user-name { font-size: 13px; font-weight: 400; color: #1A1814; flex: 1; }
+    .sb-user-email { font-size: 11px; color: #787268; }
+
+    /* ── Main content ── */
+    .main { flex: 1; overflow-y: auto; background: #F4F1EB; }
+    .page { max-width: 860px; padding: 40px 48px; margin: 0 auto; }
+
+    /* ── Typography ── */
+    .page-title { font-family: 'Instrument Serif', serif; font-size: 28px; line-height: 1.1; letter-spacing: -0.01em; color: #1A1814; margin-bottom: 4px; }
+    .page-sub { font-size: 13px; color: #787268; font-weight: 300; }
+    .section-label { font-size: 10px; font-weight: 500; letter-spacing: 0.16em; text-transform: uppercase; color: #787268; margin-bottom: 12px; }
+    .serif-num { font-family: 'Instrument Serif', serif; font-style: italic; }
+
+    /* ── Cards ── */
+    .card { background: #fff; border: 1px solid #D8D4CC; border-radius: 8px; }
+    .card-pad { padding: 24px; }
+    .card-sm { padding: 18px 20px; }
+
+    /* ── Buttons ── */
+    .btn-primary { background: #4E7B61; color: #F4F1EB; font-family: 'DM Sans', sans-serif; font-size: 13px; font-weight: 500; padding: 8px 16px; border: none; border-radius: 5px; cursor: pointer; transition: opacity 0.15s; white-space: nowrap; }
+    .btn-primary:hover { opacity: 0.88; }
+    .btn-ghost { background: none; color: #1A1814; font-family: 'DM Sans', sans-serif; font-size: 13px; border: 1px solid #D8D4CC; border-radius: 5px; padding: 8px 16px; cursor: pointer; transition: border-color 0.15s; white-space: nowrap; }
+    .btn-ghost:hover { border-color: #B8B4AC; }
+    .btn-danger { background: none; color: #C0392B; font-family: 'DM Sans', sans-serif; font-size: 13px; border: 1px solid rgba(192,57,43,0.3); border-radius: 5px; padding: 8px 16px; cursor: pointer; }
+
+    /* ── Badges ── */
+    .badge-green { display: inline-flex; align-items: center; gap: 5px; background: #EAF0EC; color: #4E7B61; font-size: 11px; font-weight: 500; padding: 3px 8px; border-radius: 3px; }
+    .badge-green::before { content: ''; width: 5px; height: 5px; border-radius: 50%; background: #4E7B61; flex-shrink: 0; }
+    .badge-muted { display: inline-block; background: #EDEAE3; color: #787268; font-size: 11px; font-weight: 500; padding: 3px 8px; border-radius: 3px; letter-spacing: 0.04em; }
+
+    /* ── Dividers ── */
+    .divider { height: 1px; background: #D8D4CC; margin: 20px 0; }
+    .divider-light { height: 1px; background: #E8E5DE; margin: 16px 0; }
+
+    /* ── Form rows ── */
+    .form-row { display: flex; align-items: center; justify-content: space-between; gap: 24px; padding: 16px 0; border-bottom: 1px solid #EDEAE3; }
+    .form-row:last-child { border-bottom: none; padding-bottom: 0; }
+    .form-row:first-child { padding-top: 0; }
+    .form-label { font-size: 13px; font-weight: 400; color: #1A1814; flex-shrink: 0; }
+    .form-sub { font-size: 12px; color: #787268; margin-top: 2px; }
+    .form-input { background: #F4F1EB; border: 1px solid #D8D4CC; border-radius: 5px; padding: 7px 11px; font-family: 'DM Sans', sans-serif; font-size: 13px; color: #1A1814; outline: none; min-width: 220px; transition: border-color 0.15s; }
+    .form-input:focus { border-color: #4E7B61; }
+    .form-input[disabled] { color: #787268; cursor: not-allowed; }
+    .form-select { background: #F4F1EB; border: 1px solid #D8D4CC; border-radius: 5px; padding: 7px 11px; font-family: 'DM Sans', sans-serif; font-size: 13px; color: #1A1814; outline: none; min-width: 220px; cursor: pointer; }
+
+    /* ── Toggle ── */
+    .toggle { position: relative; width: 36px; height: 20px; cursor: pointer; flex-shrink: 0; }
+    .toggle input { opacity: 0; width: 0; height: 0; }
+    .toggle-track { position: absolute; inset: 0; background: #C8C4BC; border-radius: 10px; transition: background 0.2s; }
+    .toggle input:checked + .toggle-track { background: #4E7B61; }
+    .toggle-thumb { position: absolute; top: 2px; left: 2px; width: 16px; height: 16px; border-radius: 50%; background: #fff; transition: transform 0.2s; box-shadow: 0 1px 3px rgba(0,0,0,0.15); }
+    .toggle input:checked ~ .toggle-thumb { transform: translateX(16px); }
+
+    /* ── Stat strip ── */
+    .stat-strip { display: grid; grid-template-columns: repeat(3, 1fr); gap: 1px; background: #D8D4CC; border: 1px solid #D8D4CC; border-radius: 8px; overflow: hidden; }
+    .stat-cell { background: #fff; padding: 20px 24px; }
+    .stat-val { font-family: 'Instrument Serif', serif; font-style: italic; font-size: 32px; color: #1A1814; line-height: 1; margin-bottom: 4px; }
+    .stat-desc { font-size: 12px; color: #787268; font-weight: 300; }
+
+    /* ── Call list ── */
+    .call-row { display: flex; align-items: flex-start; gap: 14px; padding: 14px 16px; cursor: pointer; border-radius: 6px; transition: background 0.12s; }
+    .call-row:hover { background: #F4F1EB; }
+    .call-row.selected { background: #EAF0EC; }
+    .call-dot { width: 28px; height: 28px; border-radius: 50%; background: #EAF0EC; border: 1px solid #D8D4CC; display: flex; align-items: center; justify-content: center; flex-shrink: 0; margin-top: 1px; }
+    .call-meta { font-size: 11px; color: #787268; display: flex; gap: 8px; margin-top: 3px; }
+    .call-summary { font-size: 13px; color: #1A1814; line-height: 1.4; }
+    .calls-date-header { font-size: 10px; font-weight: 500; letter-spacing: 0.14em; text-transform: uppercase; color: #B8B4AC; padding: 16px 16px 8px; }
+
+    /* ── Transcript ── */
+    .tx-turn { display: flex; gap: 12px; margin-bottom: 20px; }
+    .tx-speaker { width: 52px; flex-shrink: 0; font-size: 10px; font-weight: 500; letter-spacing: 0.1em; text-transform: uppercase; color: #B8B4AC; padding-top: 2px; text-align: right; }
+    .tx-bubble { flex: 1; }
+    .tx-text { font-size: 14px; color: #1A1814; line-height: 1.55; }
+    .tx-ts { font-size: 10px; color: #B8B4AC; margin-top: 4px; }
+    .tx-tool { background: #EAF0EC; border: 1px solid rgba(78,123,97,0.2); border-radius: 6px; padding: 10px 14px; font-size: 12px; color: #4E7B61; margin-bottom: 8px; display: flex; align-items: center; gap: 8px; }
+
+    /* ── Integration card ── */
+    .int-card { border: 1px solid #D8D4CC; border-radius: 8px; padding: 18px 20px; background: #fff; display: flex; align-items: center; gap: 16px; }
+    .int-icon { width: 36px; height: 36px; border-radius: 8px; display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
+    .int-name { font-size: 14px; font-weight: 500; color: #1A1814; }
+    .int-detail { font-size: 12px; color: #787268; margin-top: 2px; }
+    .int-soon { background: #F4F1EB; border: 1px solid #E8E5DE; }
+    .int-soon .int-name { color: #B8B4AC; }
+
+    /* ── Progress bar ── */
+    .prog-track { height: 6px; background: #E8E5DE; border-radius: 3px; overflow: hidden; }
+    .prog-fill { height: 100%; border-radius: 3px; background: #4E7B61; transition: width 0.3s; }
+    .prog-fill.warn { background: #C8813A; }
+
+    /* ── Invoice table ── */
+    .inv-table { width: 100%; border-collapse: collapse; }
+    .inv-table th { font-size: 10px; font-weight: 500; letter-spacing: 0.12em; text-transform: uppercase; color: #787268; padding: 0 0 10px; text-align: left; border-bottom: 1px solid #D8D4CC; }
+    .inv-table td { font-size: 13px; color: #1A1814; padding: 13px 0; border-bottom: 1px solid #EDEAE3; vertical-align: middle; }
+    .inv-table tr:last-child td { border-bottom: none; }
+    .inv-dl { font-size: 12px; color: #4E7B61; cursor: pointer; text-decoration: none; }
+    .inv-dl:hover { text-decoration: underline; }
+
+    /* ── Danger zone ── */
+    .danger-zone { border: 1px solid rgba(192,57,43,0.2); border-radius: 8px; padding: 20px 24px; background: #fff; }
+    .danger-title { font-size: 11px; font-weight: 500; letter-spacing: 0.14em; text-transform: uppercase; color: rgba(192,57,43,0.7); margin-bottom: 12px; }
+
+    /* ── Page header ── */
+    .page-header { margin-bottom: 36px; padding-bottom: 24px; border-bottom: 1px solid #D8D4CC; }
+
+    /* ── Number card ── */
+    .number-display { font-family: 'Instrument Serif', serif; font-style: italic; font-size: 36px; letter-spacing: -0.01em; color: #1A1814; }
+
+    /* ── Empty state ── */
+    .empty { text-align: center; padding: 64px 32px; color: #787268; }
+    .empty-title { font-family: 'Instrument Serif', serif; font-size: 20px; color: #1A1814; margin-bottom: 8px; }
+    .empty-sub { font-size: 14px; line-height: 1.6; }
+
+    /* ── Copy button ── */
+    .copy-btn { background: none; border: 1px solid #D8D4CC; border-radius: 4px; padding: 5px 10px; font-size: 12px; color: #787268; cursor: pointer; display: inline-flex; align-items: center; gap: 5px; transition: color 0.15s, border-color 0.15s; }
+    .copy-btn:hover { color: #4E7B61; border-color: #4E7B61; }
+    .copy-btn.copied { color: #4E7B61; border-color: #4E7B61; background: #EAF0EC; }
+
+    /* ── Scrollbar ── */
+    ::-webkit-scrollbar { width: 4px; }
+    ::-webkit-scrollbar-track { background: transparent; }
+    ::-webkit-scrollbar-thumb { background: #D8D4CC; border-radius: 2px; }
+  </style>
+</head>
+<body>
+<div id="root"></div>
+<script type="text/babel">
+
+/* ── Icons ── */
+const Icon = ({ d, size = 16 }) => (
+  <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round">
+    <path d={d} />
+  </svg>
+);
+const Icons = {
+  dashboard: "M3 9l9-7 9 7v11a2 2 0 01-2 2H5a2 2 0 01-2-2z M9 22V12h6v10",
+  calls: "M22 16.92v3a2 2 0 01-2.18 2 19.8 19.8 0 01-8.63-3.07A19.5 19.5 0 013.07 9.8 19.8 19.8 0 01.02 1.18 2 2 0 012 0h3a2 2 0 012 1.72c.127.96.361 1.903.7 2.81a2 2 0 01-.45 2.11L6.09 7.91a16 16 0 006 6l1.27-1.27a2 2 0 012.11-.45c.907.339 1.85.573 2.81.7A2 2 0 0122 14.92z",
+  settings: "M12 15a3 3 0 100-6 3 3 0 000 6z M19.4 15a1.65 1.65 0 00.33 1.82l.06.06a2 2 0 010 2.83 2 2 0 01-2.83 0l-.06-.06a1.65 1.65 0 00-1.82-.33 1.65 1.65 0 00-1 1.51V21a2 2 0 01-4 0v-.09A1.65 1.65 0 009 19.4a1.65 1.65 0 00-1.82.33l-.06.06a2 2 0 01-2.83-2.83l.06-.06A1.65 1.65 0 004.68 15a1.65 1.65 0 00-1.51-1H3a2 2 0 010-4h.09A1.65 1.65 0 004.6 9a1.65 1.65 0 00-.33-1.82l-.06-.06a2 2 0 012.83-2.83l.06.06A1.65 1.65 0 009 4.68a1.65 1.65 0 001-1.51V3a2 2 0 014 0v.09a1.65 1.65 0 001 1.51 1.65 1.65 0 001.82-.33l.06-.06a2 2 0 012.83 2.83l-.06.06A1.65 1.65 0 0019.4 9a1.65 1.65 0 001.51 1H21a2 2 0 010 4h-.09a1.65 1.65 0 00-1.51 1z",
+  billing: "M3 10h18M7 15h1m4 0h1m-7 4h12a3 3 0 003-3V8a3 3 0 00-3-3H6a3 3 0 00-3 3v8a3 3 0 003 3z",
+  copy: "M8 4H6a2 2 0 00-2 2v12a2 2 0 002 2h8a2 2 0 002-2v-2 M8 4v12 M16 4h2a2 2 0 012 2v12 M10 4h4",
+  check: "M20 6L9 17l-5-5",
+  logout: "M9 21H5a2 2 0 01-2-2V5a2 2 0 012-2h4 M16 17l5-5-5-5 M21 12H9",
+  phone: "M22 16.92v3a2 2 0 01-2.18 2 19.8 19.8 0 01-8.63-3.07A19.5 19.5 0 013.07 9.8a2 2 0 011.72-2.18h3a2 2 0 012 1.72c.127.96.361 1.903.7 2.81a2 2 0 01-.45 2.11L6.09 7.91a16 16 0 006 6l1.27-1.27a2 2 0 012.11-.45c.907.339 1.85.573 2.81.7A2 2 0 0122 14.92z",
+  music: "M9 18V5l12-2v13 M6 21a3 3 0 100-6 3 3 0 000 6z M18 19a3 3 0 100-6 3 3 0 000 6z",
+  chevronRight: "M9 18l6-6-6-6",
+  play: "M5 3l14 9-14 9V3z",
+  home: "M3 9l9-7 9 7v11a2 2 0 01-2 2H5a2 2 0 01-2-2z",
+  zap: "M13 2L3 14h9l-1 8 10-12h-9l1-8z",
+  download: "M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4 M7 10l5 5 5-5 M12 15V3",
+};
+
+/* ── Sidebar ── */
+const NAV = [
+  { id: 'dashboard', label: 'Dashboard', icon: Icons.dashboard },
+  { id: 'calls',     label: 'Calls',     icon: Icons.calls },
+  { id: 'settings',  label: 'Settings',  icon: Icons.settings },
+  { id: 'billing',   label: 'Billing',   icon: Icons.billing },
+];
+
+function Sidebar({ active, onNav }) {
+  return (
+    <aside className="sb">
+      <div className="sb-top">
+        <span className="sb-wordmark">
+          <span className="sb-wm-on">on</span>
+          <span className="sb-wm-cue">Cue</span>
+        </span>
+      </div>
+      <nav className="sb-nav">
+        <p className="sb-section-label">Menu</p>
+        {NAV.map(n => (
+          <button key={n.id} className={`sb-item ${active === n.id ? 'active' : ''}`} onClick={() => onNav(n.id)}>
+            <Icon d={n.icon} />
+            {n.label}
+          </button>
+        ))}
+      </nav>
+      <div className="sb-bottom">
+        <div className="sb-user">
+          <div className="sb-avatar">AM</div>
+          <div style={{flex:1, minWidth:0}}>
+            <div className="sb-user-name" style={{fontWeight:500}}>Alex Mercer</div>
+            <div className="sb-user-email">alex@gmail.com</div>
+          </div>
+          <button style={{background:'none',border:'none',cursor:'pointer',color:'#B8B4AC',padding:4}} title="Sign out">
+            <Icon d={Icons.logout} size={15} />
+          </button>
+        </div>
+      </div>
+    </aside>
+  );
+}
+
+/* ── Copy button ── */
+function CopyBtn({ text }) {
+  const [copied, setCopied] = React.useState(false);
+  const copy = () => {
+    navigator.clipboard?.writeText(text).catch(()=>{});
+    setCopied(true);
+    setTimeout(() => setCopied(false), 2000);
+  };
+  return (
+    <button className={`copy-btn ${copied ? 'copied' : ''}`} onClick={copy}>
+      <Icon d={copied ? Icons.check : Icons.copy} size={12} />
+      {copied ? 'Copied' : 'Copy'}
+    </button>
+  );
+}
+
+/* ── Toggle ── */
+function Toggle({ checked, onChange }) {
+  return (
+    <label className="toggle">
+      <input type="checkbox" checked={checked} onChange={e => onChange(e.target.checked)} />
+      <span className="toggle-track"></span>
+      <span className="toggle-thumb"></span>
+    </label>
+  );
+}
+
+/* ══════════════════════════════════════════════
+   DASHBOARD
+══════════════════════════════════════════════ */
+function Dashboard({ onNav }) {
+  const ONCUE_NUMBER = '+1 (415) 013-8492';
+  const recentCalls = [
+    { id:1, time:'Today, 9:41 AM', dur:'2m 14s', summary:'Played focus playlist, adjusted volume twice', icon: Icons.music },
+    { id:2, time:'Today, 8:03 AM', dur:'0m 47s', summary:'Skipped track, asked what song was playing', icon: Icons.music },
+    { id:3, time:'Yesterday, 6:28 PM', dur:'4m 02s', summary:'Queued road trip playlist, turned volume up', icon: Icons.music },
+  ];
+  return (
+    <div className="page">
+      {/* Header */}
+      <div className="page-header">
+        <h1 className="page-title">Good morning, Alex.</h1>
+        <p className="page-sub">Your onCue number is active and ready to take calls.</p>
+      </div>
+
+      {/* OnCue number card */}
+      <div style={{marginBottom:32}}>
+        <p className="section-label">Your onCue number</p>
+        <div className="card card-pad" style={{display:'flex', alignItems:'center', justifyContent:'space-between', gap:16}}>
+          <div>
+            <div className="number-display">{ONCUE_NUMBER}</div>
+            <p style={{fontSize:12, color:'#787268', marginTop:6, fontWeight:300}}>Save this to your contacts. Call it anytime — no app needed.</p>
+          </div>
+          <div style={{display:'flex', gap:8, flexShrink:0}}>
+            <CopyBtn text={ONCUE_NUMBER} />
+            <button className="btn-primary" style={{display:'flex', alignItems:'center', gap:6}}>
+              <Icon d={Icons.phone} size={13} />
+              Call now
+            </button>
+          </div>
+        </div>
+      </div>
+
+      {/* Integrations */}
+      <div style={{marginBottom:32}}>
+        <div style={{display:'flex', alignItems:'center', justifyContent:'space-between', marginBottom:12}}>
+          <p className="section-label" style={{marginBottom:0}}>Connected integrations</p>
+          <button className="btn-ghost" style={{fontSize:12, padding:'5px 12px'}} onClick={() => onNav('settings')}>Manage</button>
+        </div>
+        <div style={{display:'grid', gridTemplateColumns:'1fr 1fr 1fr', gap:10}}>
+          {/* Spotify */}
+          <div className="int-card">
+            <div className="int-icon" style={{background:'#1DB954'}}>
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="#000">
+                <path d="M12 2C6.477 2 2 6.477 2 12s4.477 10 10 10 10-4.477 10-10S17.523 2 12 2zm4.586 14.424a.623.623 0 01-.857.208c-2.348-1.435-5.304-1.76-8.785-.964a.623.623 0 01-.277-1.215c3.809-.87 7.076-.496 9.712 1.115a.623.623 0 01.207.856zm1.223-2.722a.78.78 0 01-1.072.257C14.22 12.27 10.855 11.91 8.12 12.7a.78.78 0 01-.437-1.495c3.115-.91 6.988-.47 9.673 1.224a.78.78 0 01.453 1.273zm.105-2.835C15.06 9.107 10.855 8.97 8.004 9.8a.937.937 0 11-.543-1.794c3.29-.998 8.16-.805 11.384 1.094a.937.937 0 11-.931 1.767z"/>
+              </svg>
+            </div>
+            <div style={{flex:1, minWidth:0}}>
+              <div className="int-name">Spotify</div>
+              <div className="int-detail">alex@gmail.com</div>
+            </div>
+            <span className="badge-green">Connected</span>
+          </div>
+          {/* Trip Planning */}
+          <div className="int-card int-soon">
+            <div className="int-icon" style={{background:'#EDEAE3', border:'1px solid #D8D4CC'}}>
+              <Icon d={Icons.home} size={16} />
+            </div>
+            <div style={{flex:1}}>
+              <div className="int-name">Trip Planning</div>
+              <div className="int-detail" style={{color:'#B8B4AC'}}>Launching 2026</div>
+            </div>
+            <span className="badge-muted">Soon</span>
+          </div>
+          {/* Food & Coffee */}
+          <div className="int-card int-soon">
+            <div className="int-icon" style={{background:'#EDEAE3', border:'1px solid #D8D4CC'}}>
+              <Icon d={Icons.zap} size={16} />
+            </div>
+            <div style={{flex:1}}>
+              <div className="int-name">Food & Coffee</div>
+              <div className="int-detail" style={{color:'#B8B4AC'}}>Launching 2026</div>
+            </div>
+            <span className="badge-muted">Soon</span>
+          </div>
+        </div>
+      </div>
+
+      {/* Recent calls */}
+      <div style={{marginBottom:32}}>
+        <div style={{display:'flex', alignItems:'center', justifyContent:'space-between', marginBottom:12}}>
+          <p className="section-label" style={{marginBottom:0}}>Recent calls</p>
+          <button className="btn-ghost" style={{fontSize:12, padding:'5px 12px'}} onClick={() => onNav('calls')}>View all</button>
+        </div>
+        <div className="card" style={{overflow:'hidden'}}>
+          {recentCalls.map((c, i) => (
+            <div key={c.id} style={{display:'flex', alignItems:'center', gap:14, padding:'14px 20px', borderBottom: i < recentCalls.length-1 ? '1px solid #EDEAE3' : 'none', cursor:'pointer'}}
+              onClick={() => onNav('calls')}>
+              <div className="call-dot"><Icon d={c.icon} size={13} /></div>
+              <div style={{flex:1, minWidth:0}}>
+                <p style={{fontSize:13, color:'#1A1814', lineHeight:1.4, marginBottom:3}}>{c.summary}</p>
+                <div style={{display:'flex', gap:10}}>
+                  <span style={{fontSize:11, color:'#B8B4AC'}}>{c.time}</span>
+                  <span style={{fontSize:11, color:'#B8B4AC'}}>{c.dur}</span>
+                </div>
+              </div>
+              <Icon d={Icons.chevronRight} size={14} />
+            </div>
+          ))}
+        </div>
+      </div>
+
+      {/* Stat strip */}
+      <div className="stat-strip">
+        <div className="stat-cell">
+          <div className="stat-val">24</div>
+          <div className="stat-desc">total calls</div>
+        </div>
+        <div className="stat-cell">
+          <div className="stat-val">87</div>
+          <div className="stat-desc">commands run</div>
+        </div>
+        <div className="stat-cell">
+          <div className="stat-val">14<span style={{fontSize:18, opacity:0.5}}>m</span></div>
+          <div className="stat-desc">minutes used this month</div>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+/* ══════════════════════════════════════════════
+   CALLS
+══════════════════════════════════════════════ */
+const CALLS_DATA = {
+  today: [
+    { id:1, time:'9:41 AM', dur:'2m 14s', summary:'Played focus playlist, adjusted volume', started:'9:41:02 AM', ended:'9:43:16 AM', number:'+1 (415) 013-8492' },
+    { id:2, time:'8:03 AM', dur:'0m 47s', summary:'Skipped track, asked what was playing', started:'8:03:11 AM', ended:'8:03:58 AM', number:'+1 (415) 013-8492' },
+  ],
+  yesterday: [
+    { id:3, time:'6:28 PM', dur:'4m 02s', summary:'Queued road trip playlist, turned volume up', started:'6:28:44 PM', ended:'6:32:46 PM', number:'+1 (415) 013-8492' },
+    { id:4, time:'2:15 PM', dur:'1m 08s', summary:'Asked what song was playing', started:'2:15:03 PM', ended:'2:16:11 PM', number:'+1 (415) 013-8492' },
+  ],
+};
+const TRANSCRIPT_1 = [
+  { speaker:'You',   ts:'00:02', type:'text',  text:'Play something to help me focus.' },
+  { speaker:'OnCue', ts:'00:04', type:'tool',  text:'Searched Spotify for "focus" playlists' },
+  { speaker:'OnCue', ts:'00:04', type:'text',  text:'Playing Deep Focus on Spotify.' },
+  { speaker:'You',   ts:'00:34', type:'text',  text:'Turn it down a bit.' },
+  { speaker:'OnCue', ts:'00:36', type:'tool',  text:'Set Spotify volume to 60%' },
+  { speaker:'OnCue', ts:'00:36', type:'text',  text:'Done, volume at 60%.' },
+  { speaker:'You',   ts:'01:12', type:'text',  text:"What's this song?" },
+  { speaker:'OnCue', ts:'01:14', type:'text',  text:"That's Weightless by Marconi Union." },
+];
+
+function Calls() {
+  const [selected, setSelected] = React.useState(1);
+  const sel = [...CALLS_DATA.today, ...CALLS_DATA.yesterday].find(c => c.id === selected);
+
+  return (
+    <div style={{display:'flex', height:'100vh'}}>
+      {/* Left: list */}
+      <div style={{width:300, flexShrink:0, borderRight:'1px solid #D8D4CC', overflowY:'auto', background:'#F4F1EB'}}>
+        <div style={{padding:'24px 16px 12px'}}>
+          <h2 style={{fontFamily:"'Instrument Serif', serif", fontSize:22, letterSpacing:'-0.01em'}}>Calls</h2>
+        </div>
+        {[['Today', CALLS_DATA.today], ['Yesterday', CALLS_DATA.yesterday]].map(([label, items]) => (
+          <div key={label}>
+            <p className="calls-date-header">{label}</p>
+            {items.map(c => (
+              <div key={c.id} className={`call-row ${selected === c.id ? 'selected' : ''}`} onClick={() => setSelected(c.id)}>
+                <div className="call-dot" style={selected === c.id ? {background:'#C8E0D1', borderColor:'rgba(78,123,97,0.3)'} : {}}>
+                  <Icon d={Icons.music} size={12} />
+                </div>
+                <div style={{flex:1, minWidth:0}}>
+                  <p className="call-summary">{c.summary}</p>
+                  <div className="call-meta">
+                    <span>{c.time}</span>
+                    <span>·</span>
+                    <span>{c.dur}</span>
+                  </div>
+                </div>
+              </div>
+            ))}
+          </div>
+        ))}
+      </div>
+
+      {/* Right: transcript */}
+      <div style={{flex:1, overflowY:'auto', background:'#fff'}}>
+        {sel ? (
+          <div style={{padding:'32px 40px', maxWidth:680}}>
+            {/* Call metadata */}
+            <div style={{marginBottom:32, paddingBottom:24, borderBottom:'1px solid #EDEAE3'}}>
+              <h3 style={{fontFamily:"'Instrument Serif', serif", fontSize:20, marginBottom:12}}>{sel.summary}</h3>
+              <div style={{display:'flex', gap:28, flexWrap:'wrap'}}>
+                {[['Number', sel.number], ['Started', sel.started], ['Ended', sel.ended], ['Duration', sel.dur]].map(([k,v]) => (
+                  <div key={k}>
+                    <p style={{fontSize:10, fontWeight:500, letterSpacing:'0.12em', textTransform:'uppercase', color:'#B8B4AC', marginBottom:3}}>{k}</p>
+                    <p style={{fontSize:13, color:'#1A1814'}}>{v}</p>
+                  </div>
+                ))}
+              </div>
+            </div>
+
+            {/* Transcript */}
+            <p className="section-label" style={{marginBottom:24}}>Transcript</p>
+            {TRANSCRIPT_1.map((t, i) => (
+              <div key={i} className="tx-turn">
+                <span className="tx-speaker" style={t.speaker === 'OnCue' ? {color:'#4E7B61'} : {}}>{t.speaker}</span>
+                <div className="tx-bubble">
+                  {t.type === 'tool' ? (
+                    <div className="tx-tool">
+                      <Icon d={Icons.zap} size={12} />
+                      {t.text}
+                    </div>
+                  ) : (
+                    <>
+                      <p className="tx-text">{t.text}</p>
+                      <p className="tx-ts">{t.ts}</p>
+                    </>
+                  )}
+                </div>
+              </div>
+            ))}
+          </div>
+        ) : (
+          <div className="empty">
+            <div className="empty-title">No call selected</div>
+            <div className="empty-sub">Pick a call from the list.</div>
+          </div>
+        )}
+      </div>
+    </div>
+  );
+}
+
+/* ══════════════════════════════════════════════
+   SETTINGS
+══════════════════════════════════════════════ */
+function Settings() {
+  const [name, setName] = React.useState('Alex Mercer');
+  const [voice, setVoice] = React.useState('aria');
+  const [length, setLength] = React.useState('standard');
+  const [tone, setTone] = React.useState(true);
+  const [spotifyDevice, setSpotifyDevice] = React.useState('last_active');
+  const [saved, setSaved] = React.useState('');
+
+  const save = (section) => { setSaved(section); setTimeout(() => setSaved(''), 2000); };
+
+  return (
+    <div className="page">
+      <div className="page-header">
+        <h1 className="page-title">Settings</h1>
+        <p className="page-sub">Manage your account, voice, and integrations.</p>
+      </div>
+
+      {/* Profile */}
+      <div style={{marginBottom:28}}>
+        <p className="section-label">Profile</p>
+        <div className="card card-pad">
+          <div className="form-row">
+            <div><div className="form-label">Display name</div></div>
+            <input className="form-input" value={name} onChange={e => setName(e.target.value)} />
+          </div>
+          <div className="form-row">
+            <div><div className="form-label">Email</div><div className="form-sub">Managed by your auth provider</div></div>
+            <input className="form-input" value="alex@gmail.com" disabled />
+          </div>
+          <div className="form-row">
+            <div><div className="form-label">OnCue phone number</div><div className="form-sub">Incoming calls from this number are matched to your account</div></div>
+            <div style={{display:'flex', gap:8, alignItems:'center'}}>
+              <input className="form-input" value="+1 (415) 000-0000" disabled style={{minWidth:160}} />
+              <button className="btn-ghost" style={{fontSize:12}}>Verify different number</button>
+            </div>
+          </div>
+          <div style={{marginTop:20, display:'flex', justifyContent:'flex-end'}}>
+            <button className="btn-primary" onClick={() => save('profile')}>
+              {saved === 'profile' ? '✓ Saved' : 'Save profile'}
+            </button>
+          </div>
+        </div>
+      </div>
+
+      {/* Voice & Behavior */}
+      <div style={{marginBottom:28}}>
+        <p className="section-label">Voice & Behavior</p>
+        <div className="card card-pad">
+          <div className="form-row">
+            <div><div className="form-label">Voice</div><div className="form-sub">ElevenLabs voice for OnCue responses</div></div>
+            <div style={{display:'flex', gap:8, alignItems:'center'}}>
+              <select className="form-select" value={voice} onChange={e => setVoice(e.target.value)}>
+                <option value="aria">Aria</option>
+                <option value="nova">Nova</option>
+                <option value="echo">Echo</option>
+                <option value="fable">Fable</option>
+              </select>
+              <button className="btn-ghost" style={{fontSize:12, display:'flex', alignItems:'center', gap:5}}>
+                <Icon d={Icons.play} size={11} /> Preview
+              </button>
+            </div>
+          </div>
+          <div className="form-row">
+            <div><div className="form-label">Response length</div><div className="form-sub">How much OnCue says back to you</div></div>
+            <div style={{display:'flex', gap:2, background:'#F4F1EB', border:'1px solid #D8D4CC', borderRadius:5, padding:3}}>
+              {['terse','standard','chatty'].map(l => (
+                <button key={l} onClick={() => setLength(l)}
+                  style={{padding:'6px 14px', borderRadius:3, border:'none', cursor:'pointer', fontSize:13,
+                    background: length===l ? '#fff' : 'none',
+                    color: length===l ? '#1A1814' : '#787268',
+                    fontFamily:"'DM Sans', sans-serif",
+                    fontWeight: length===l ? 500 : 400,
+                    boxShadow: length===l ? '0 1px 2px rgba(0,0,0,0.08)' : 'none',
+                    transition:'all 0.15s',
+                  }}>
+                  {l.charAt(0).toUpperCase() + l.slice(1)}
+                </button>
+              ))}
+            </div>
+          </div>
+          <div className="form-row">
+            <div><div className="form-label">Wake confirmation tone</div><div className="form-sub">A brief chime when OnCue starts listening</div></div>
+            <Toggle checked={tone} onChange={setTone} />
+          </div>
+          <div style={{marginTop:20, display:'flex', justifyContent:'flex-end'}}>
+            <button className="btn-primary" onClick={() => save('voice')}>
+              {saved === 'voice' ? '✓ Saved' : 'Save preferences'}
+            </button>
+          </div>
+        </div>
+      </div>
+
+      {/* Integrations */}
+      <div style={{marginBottom:28}}>
+        <p className="section-label">Integrations</p>
+        <div className="card card-pad">
+          <div style={{display:'flex', alignItems:'center', gap:14, marginBottom:20, paddingBottom:20, borderBottom:'1px solid #EDEAE3'}}>
+            <div className="int-icon" style={{background:'#1DB954', width:40, height:40, borderRadius:8}}>
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="#000">
+                <path d="M12 2C6.477 2 2 6.477 2 12s4.477 10 10 10 10-4.477 10-10S17.523 2 12 2zm4.586 14.424a.623.623 0 01-.857.208c-2.348-1.435-5.304-1.76-8.785-.964a.623.623 0 01-.277-1.215c3.809-.87 7.076-.496 9.712 1.115a.623.623 0 01.207.856zm1.223-2.722a.78.78 0 01-1.072.257C14.22 12.27 10.855 11.91 8.12 12.7a.78.78 0 01-.437-1.495c3.115-.91 6.988-.47 9.673 1.224a.78.78 0 01.453 1.273zm.105-2.835C15.06 9.107 10.855 8.97 8.004 9.8a.937.937 0 11-.543-1.794c3.29-.998 8.16-.805 11.384 1.094a.937.937 0 11-.931 1.767z"/>
+              </svg>
+            </div>
+            <div style={{flex:1}}>
+              <div style={{display:'flex', alignItems:'center', gap:10}}>
+                <span style={{fontSize:15, fontWeight:500}}>Spotify</span>
+                <span className="badge-green">Connected</span>
+              </div>
+              <div style={{fontSize:12, color:'#787268', marginTop:2}}>alex@gmail.com</div>
+            </div>
+            <button className="btn-ghost" style={{fontSize:12, color:'#C0392B', borderColor:'rgba(192,57,43,0.3)'}}>Disconnect</button>
+          </div>
+          <div className="form-row" style={{paddingTop:0}}>
+            <div><div className="form-label">Default playback device</div><div className="form-sub">Used when no device is currently active</div></div>
+            <select className="form-select" value={spotifyDevice} onChange={e => setSpotifyDevice(e.target.value)} style={{minWidth:200}}>
+              <option value="last_active">Last active device</option>
+              <option value="phone">My iPhone</option>
+              <option value="macbook">MacBook Pro</option>
+            </select>
+          </div>
+          <div style={{marginTop:20, display:'flex', justifyContent:'flex-end'}}>
+            <button className="btn-primary" onClick={() => save('integrations')}>
+              {saved === 'integrations' ? '✓ Saved' : 'Save'}
+            </button>
+          </div>
+        </div>
+      </div>
+
+      {/* Danger zone */}
+      <div className="danger-zone">
+        <p className="danger-title">Danger zone</p>
+        <div style={{display:'flex', alignItems:'center', justifyContent:'space-between'}}>
+          <div>
+            <p style={{fontSize:14, color:'#1A1814', marginBottom:3}}>Delete account</p>
+            <p style={{fontSize:12, color:'#787268'}}>Permanently delete your account and all data. This cannot be undone.</p>
+          </div>
+          <button className="btn-danger">Delete account</button>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+/* ══════════════════════════════════════════════
+   BILLING
+══════════════════════════════════════════════ */
+function Billing() {
+  const usage = 14; const cap = 60; const pct = Math.round(usage/cap*100);
+  const invoices = [
+    { date:'Apr 1, 2026', amount:'$9.00', status:'Paid' },
+    { date:'Mar 1, 2026', amount:'$9.00', status:'Paid' },
+    { date:'Feb 1, 2026', amount:'$9.00', status:'Paid' },
+  ];
+  return (
+    <div className="page">
+      <div className="page-header">
+        <h1 className="page-title">Billing</h1>
+        <p className="page-sub">Manage your plan, usage, and payment details.</p>
+      </div>
+
+      {/* Current plan */}
+      <div style={{marginBottom:28}}>
+        <p className="section-label">Current plan</p>
+        <div className="card card-pad" style={{display:'flex', gap:40, flexWrap:'wrap'}}>
+          <div style={{flex:1, minWidth:200}}>
+            <div style={{display:'flex', alignItems:'baseline', gap:6, marginBottom:4}}>
+              <span style={{fontFamily:"'Instrument Serif',serif", fontStyle:'italic', fontSize:32}}>Starter</span>
+              <span style={{fontSize:13, color:'#787268'}}>plan</span>
+            </div>
+            <div style={{display:'flex', alignItems:'baseline', gap:4, marginBottom:16}}>
+              <span style={{fontFamily:"'Instrument Serif',serif", fontStyle:'italic', fontSize:28}}>$9</span>
+              <span style={{fontSize:13, color:'#787268'}}>/month</span>
+            </div>
+            <div style={{fontSize:12, color:'#787268', marginBottom:4}}>Next billing date</div>
+            <div style={{fontSize:14, color:'#1A1814'}}>May 27, 2026</div>
+          </div>
+          <div style={{flex:1, minWidth:200}}>
+            <p style={{fontSize:11, fontWeight:500, letterSpacing:'0.12em', textTransform:'uppercase', color:'#B8B4AC', marginBottom:12}}>What's included</p>
+            {['60 minutes per month', 'Spotify integration', 'Transcript history', 'Email support'].map(item => (
+              <div key={item} style={{display:'flex', alignItems:'center', gap:8, marginBottom:8}}>
+                <Icon d={Icons.check} size={13} />
+                <span style={{fontSize:13, color:'#1A1814'}}>{item}</span>
+              </div>
+            ))}
+          </div>
+          <div style={{display:'flex', alignItems:'flex-start'}}>
+            <button className="btn-ghost">Manage plan</button>
+          </div>
+        </div>
+      </div>
+
+      {/* Usage */}
+      <div style={{marginBottom:28}}>
+        <p className="section-label">Usage this month</p>
+        <div className="card card-pad">
+          <div style={{display:'flex', justifyContent:'space-between', alignItems:'baseline', marginBottom:10}}>
+            <div style={{display:'flex', alignItems:'baseline', gap:4}}>
+              <span style={{fontFamily:"'Instrument Serif',serif", fontStyle:'italic', fontSize:28}}>{usage}</span>
+              <span style={{fontSize:13, color:'#787268'}}>of {cap} minutes used</span>
+            </div>
+            <span style={{fontSize:12, color:'#787268'}}>{pct}%</span>
+          </div>
+          <div className="prog-track" style={{marginBottom:20}}>
+            <div className="prog-fill" style={{width:`${pct}%`}} />
+          </div>
+          <div style={{display:'grid', gridTemplateColumns:'repeat(3, 1fr)', gap:1, background:'#E8E5DE', borderRadius:4, overflow:'hidden'}}>
+            {[['24', 'total calls'], ['87', 'commands run'], ['14m', 'minutes used']].map(([v,l]) => (
+              <div key={l} style={{background:'#F9F8F5', padding:'14px 18px'}}>
+                <div style={{fontFamily:"'Instrument Serif',serif", fontStyle:'italic', fontSize:22, marginBottom:2}}>{v}</div>
+                <div style={{fontSize:11, color:'#787268'}}>{l}</div>
+              </div>
+            ))}
+          </div>
+        </div>
+      </div>
+
+      {/* Payment method */}
+      <div style={{marginBottom:28}}>
+        <p className="section-label">Payment method</p>
+        <div className="card card-pad" style={{display:'flex', alignItems:'center', gap:16}}>
+          <div style={{width:44, height:28, background:'#1A1814', borderRadius:4, display:'flex', alignItems:'center', justifyContent:'center', flexShrink:0}}>
+            <span style={{fontSize:9, fontWeight:700, color:'#F4F1EB', letterSpacing:'0.05em'}}>VISA</span>
+          </div>
+          <div style={{flex:1}}>
+            <span style={{fontSize:14, color:'#1A1814'}}>Visa ending in 4242</span>
+            <span style={{fontSize:12, color:'#787268', marginLeft:12}}>Expires 08/27</span>
+          </div>
+          <button className="btn-ghost" style={{fontSize:12}}>Update</button>
+        </div>
+      </div>
+
+      {/* Invoices */}
+      <div>
+        <p className="section-label">Invoices</p>
+        <div className="card" style={{padding:'4px 24px 0'}}>
+          <table className="inv-table">
+            <thead>
+              <tr>
+                <th>Date</th>
+                <th>Amount</th>
+                <th>Status</th>
+                <th></th>
+              </tr>
+            </thead>
+            <tbody>
+              {invoices.map(inv => (
+                <tr key={inv.date}>
+                  <td>{inv.date}</td>
+                  <td><span className="serif-num" style={{fontSize:14}}>{inv.amount}</span></td>
+                  <td><span className="badge-green" style={{fontSize:11}}>{inv.status}</span></td>
+                  <td style={{textAlign:'right'}}>
+                    <a className="inv-dl" href="#">
+                      <span style={{display:'inline-flex', alignItems:'center', gap:4}}>
+                        <Icon d={Icons.download} size={12} /> PDF
+                      </span>
+                    </a>
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+/* ══════════════════════════════════════════════
+   APP SHELL
+══════════════════════════════════════════════ */
+const SCREENS = { dashboard: Dashboard, calls: Calls, settings: Settings, billing: Billing };
+
+function App() {
+  const [screen, setScreen] = React.useState('dashboard');
+  const Screen = SCREENS[screen];
+  return (
+    <div style={{display:'flex', height:'100vh', overflow:'hidden'}}>
+      <Sidebar active={screen} onNav={setScreen} />
+      <main className="main" style={{overflow: screen === 'calls' ? 'hidden' : 'auto'}}>
+        <Screen onNav={setScreen} />
+      </main>
+    </div>
+  );
+}
+
+ReactDOM.createRoot(document.getElementById('root')).render(<App />);
+</script>
+</body>
+</html>

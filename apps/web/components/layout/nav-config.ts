@@ -1,4 +1,4 @@
-import { CreditCard, LayoutDashboard, Phone, Settings } from "lucide-react";
+import { CreditCard, Home, Phone, Settings } from "lucide-react";
 
 export type NavItem = {
   href: string;
@@ -7,7 +7,7 @@ export type NavItem = {
 };
 
 export const NAV_ITEMS: readonly NavItem[] = [
-  { href: "/dashboard", label: "Dashboard", icon: LayoutDashboard },
+  { href: "/dashboard", label: "Dashboard", icon: Home },
   { href: "/calls", label: "Calls", icon: Phone },
   { href: "/settings", label: "Settings", icon: Settings },
   { href: "/billing", label: "Billing", icon: CreditCard },

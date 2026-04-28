@@ -117,7 +117,40 @@ Track progress here. Update as work lands.
 - **Cold-clone test.** Run the README on a fresh machine, fix every doc gap.
 - **Audio demo on the hero.** 15-second clip embedded in `HeroVisual` or click-to-play.
 - **Pick an auth provider** (Clerk vs Supabase Auth vs Auth.js) and wire it into `(app)/` — middleware to gate the group, JWT verification dependency in `apps/api`. Architecture decision is committed: same Next.js app, route groups, JWT-verified calls into `apps/api`. No new monorepo package.
-- **First real screen content** once auth lands — dashboard "Connect Spotify" button (routes to existing `/v1/spotify/authorize?phone_number=…`) and call history list (reads `call_turn` rows via a new `GET /v1/calls` endpoint).
+- **Translate the design handoff** at `apps/web/design-reference/claude-design/design_handoff_oncue_app/` into screen components. Each screen consumes hooks from `hooks/queries/`. Mock data drives the UI today; when auth lands, swap service-layer bodies for real fetches.
+- **Backend gaps surfaced by `types/api.ts`** (search for `// not yet in backend`): `User.email`, `Call.summary` (AI one-liner), `Call.duration_seconds`, `CallTurn.offset_seconds`, voice/response-length/wake-tone preferences, default playback device, plan/payment/invoice models. Add these to `apps/api` after the UI proves the shapes.
+
+## Data Layer (authed product)
+
+Frontend-first contract: the UI defines what the API must return. Backend (`apps/api`) catches up. Fields the backend hasn't modeled yet are marked `// not yet in backend` in `types/api.ts`.
+
+```
+types/
+  api.ts                — typed mirrors of backend DTOs + future shapes (User, Call, CallTurn, Integration, Plan, Invoice, …).
+lib/
+  api/
+    mocks.ts            — fixture data shared across service modules.
+    util.ts             — `delay()` to simulate network in mocks.
+    account.ts          — getProfile, updateProfile
+    calls.ts            — listCalls, getCall (returns { call, turns })
+    integrations.ts     — listIntegrations, disconnectSpotify
+    usage.ts            — getUsage
+    preferences.ts      — getVoiceOptions, getVoicePreferences, updateVoicePreferences, getPlaybackDevices, getSpotifySettings, updateSpotifySettings
+    billing.ts          — getPlan, getPaymentMethod, listInvoices
+  query-keys.ts         — centralized TanStack Query keys (mutations import from here for invalidation).
+hooks/
+  queries/              — one file per related read group (use-profile, use-calls, use-integrations, use-usage, use-voice, use-billing).
+  mutations/            — one file per write (use-update-profile, use-update-voice-preferences, use-disconnect-spotify, …).
+components/providers/
+  query-provider.tsx    — QueryClient + Devtools, wired in (app)/layout.tsx.
+```
+
+**Conventions:**
+- Service modules in `lib/api/*` are the swap point. Today they `await delay()` and return mock fixtures. When the backend is ready, replace the function body with `fetch(...)` — signatures stay identical, hooks/screens don't change.
+- Screens never import from `lib/api/*` directly. They consume hooks (`useCalls()`, `useProfile()`).
+- New query? Add the key to `lib/query-keys.ts` first, then a hook under `hooks/queries/`.
+- New mutation? Use `useMutation` and invalidate via `qc.invalidateQueries({ queryKey: queryKeys.X })`. For trivial post-write cache updates use `qc.setQueryData(queryKeys.X, result)`.
+- Default `staleTime` is 60s; tune per-hook if needed.
 
 ## App Shell (authed product)
 

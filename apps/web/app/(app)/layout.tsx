@@ -1,4 +1,5 @@
 import { AppShell } from "@/components/layout/app-shell";
+import { QueryProvider } from "@/components/providers/query-provider";
 import { getServerPreference } from "@/lib/server-preferences";
 
 export default async function AppGroupLayout({
@@ -10,6 +11,8 @@ export default async function AppGroupLayout({
     (await getServerPreference("sidebar-collapsed")) === "true";
 
   return (
-    <AppShell initialSidebarCollapsed={sidebarCollapsed}>{children}</AppShell>
+    <QueryProvider>
+      <AppShell initialSidebarCollapsed={sidebarCollapsed}>{children}</AppShell>
+    </QueryProvider>
   );
 }

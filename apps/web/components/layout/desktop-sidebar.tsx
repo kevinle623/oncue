@@ -4,13 +4,14 @@ import { PanelLeft } from "lucide-react";
 import Link from "next/link";
 import { useCallback, useState } from "react";
 import { Wordmark } from "@/components/common/wordmark";
+import { NAV_ITEMS } from "@/components/layout/nav-config";
+import { SidebarUserRow } from "@/components/layout/sidebar-user-row";
 import {
   Tooltip,
   TooltipContent,
   TooltipProvider,
   TooltipTrigger,
 } from "@/components/ui/tooltip";
-import { NAV_ITEMS } from "@/components/layout/nav-config";
 import { cn } from "@/lib/utils";
 
 const COLLAPSED_WIDTH = "66px";
@@ -63,11 +64,11 @@ export function DesktopSidebar({
   return (
     <TooltipProvider delayDuration={0}>
       <aside
-        className="border-border bg-surface-low fixed top-0 left-0 z-50 hidden h-svh flex-col overflow-hidden border-r transition-[width] duration-300 ease-in-out lg:flex"
+        className="border-border bg-surface fixed top-0 left-0 z-50 hidden h-svh flex-col overflow-hidden border-r transition-[width] duration-300 ease-in-out lg:flex"
         style={{ width: collapsed ? COLLAPSED_WIDTH : EXPANDED_WIDTH }}
         onTransitionEnd={handleTransitionEnd}
       >
-        <div className="border-border flex h-16 items-center border-b px-5">
+        <div className="border-border flex items-center gap-2 border-b px-4 py-5">
           <Link
             href="/"
             aria-label="OnCue home"
@@ -98,7 +99,15 @@ export function DesktopSidebar({
           </SidebarTooltip>
         </div>
 
-        <nav className="flex-1 space-y-1 pt-4">
+        <nav className="flex flex-1 flex-col gap-0.5 overflow-y-auto p-2">
+          <p
+            className={cn(
+              "text-muted px-3 pt-3 pb-1 text-[10px] font-medium tracking-[0.14em] uppercase transition-opacity duration-300",
+              collapsed ? "opacity-0" : "opacity-100",
+            )}
+          >
+            Menu
+          </p>
           {NAV_ITEMS.map(({ href, label, icon: Icon }) => {
             const isActive =
               pathname === href || pathname.startsWith(`${href}/`);
@@ -107,13 +116,13 @@ export function DesktopSidebar({
                 <Link
                   href={href}
                   className={cn(
-                    "flex items-center gap-4 px-5 py-2.5 text-sm whitespace-nowrap transition-colors",
+                    "flex items-center gap-2.5 rounded-md px-3 py-2.5 text-sm whitespace-nowrap transition-colors",
                     isActive
-                      ? "text-accent bg-accent-soft border-accent border-r-2"
-                      : "text-muted-foreground hover:text-foreground hover:bg-surface",
+                      ? "bg-accent-soft text-accent font-medium"
+                      : "text-muted-foreground hover:bg-foreground/[0.05] hover:text-foreground",
                   )}
                 >
-                  <Icon className="size-[18px] flex-shrink-0" />
+                  <Icon className="size-4 flex-shrink-0" />
                   <span
                     className={cn(
                       "transition-opacity duration-300",
@@ -128,15 +137,8 @@ export function DesktopSidebar({
           })}
         </nav>
 
-        <div className="border-border text-muted-foreground border-t px-5 py-4 text-[10px] tracking-[0.14em] whitespace-nowrap uppercase">
-          <span
-            className={cn(
-              "transition-opacity duration-300",
-              collapsed ? "opacity-0" : "opacity-100",
-            )}
-          >
-            Beta preview
-          </span>
+        <div className="border-border border-t p-2">
+          <SidebarUserRow collapsed={collapsed} />
         </div>
       </aside>
     </TooltipProvider>
