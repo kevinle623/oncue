@@ -34,8 +34,9 @@ Note: Next.js 16 removed `next lint`. Use `bun run lint` which invokes ESLint di
 ```
 components/
   ui/         shadcn primitives only (button, card, …)
-  layout/     nav, footer, doc-page
+  layout/     marketing shell (nav, footer, doc-page) and authed shell (app-shell, app-sidebar)
   sections/   one file per landing-page section (hero, hero-visual, how-it-works, integrations, why-hands-free, privacy, faq, get-started-cta)
+  screens/    one file per authed-product screen (dashboard, calls, settings, billing). Parallel to sections/ but for (app)/ routes.
   common/     reusable building blocks (container, section, divider, wordmark, section-label, display-heading, section-body, primary-button, reveal)
   icons/      inline SVG icon components
     brand/    third-party brand glyphs (e.g. spotify)
@@ -75,8 +76,12 @@ app/
     page.tsx           — landing page
     privacy/page.tsx
     terms/page.tsx
-    docs/page.tsx
-  (app)/               — TODO: authed product (dashboard, calls, settings, billing). Add Clerk middleware when this lands.
+  (app)/               — authed product. Currently scaffolding only — no auth gating yet. Add Clerk middleware when an auth provider is wired in.
+    layout.tsx         — wraps children in AppShell (sidebar + main)
+    dashboard/page.tsx
+    calls/page.tsx
+    settings/page.tsx
+    billing/page.tsx
 ```
 
 Route groups (`(marketing)`, `(app)`) do not affect URLs. Marketing routes still resolve to `/`, `/privacy`, `/terms`, `/docs`.
@@ -88,7 +93,7 @@ Route files (`page.tsx`, `layout.tsx`) must stay thin. They compose components, 
 - **Never** inline large markup blocks in `app/**/page.tsx`. Extract every meaningful section into its own component.
 - A `page.tsx` should read like a table of contents: a short list of component imports and a clean JSX tree.
 - Landing page sections should use the `Section` wrapper from `common/` to get consistent viewport-height behavior on desktop.
-- Sub-pages (privacy, terms, docs) compose through the `DocPage` layout component so they share typography, the back-to-home affordance, and the nav/footer shell.
+- Sub-pages (privacy, terms) compose through the `DocPage` layout component so they share typography, the back-to-home affordance, and the nav/footer shell.
 
 ## Conventions
 
@@ -102,16 +107,17 @@ Track progress here. Update as work lands.
 
 ### Done
 - Marketing landing page at `/` with hero, how-it-works, integrations, why-hands-free, privacy, faq, get-started CTA.
-- Sub-pages: `/privacy`, `/terms`, `/docs` (composed via `DocPage`).
+- Sub-pages: `/privacy`, `/terms` (composed via `DocPage`).
 - Design system primitives in `components/common/` (see list above).
-- Route groups: `(marketing)/` holds all public routes. `(app)/` is reserved for the authed product and does not exist yet.
+- Route groups: `(marketing)/` holds all public routes. `(app)/` holds the authed product shell (dashboard, calls, settings, billing) — placeholder screens, no auth gating yet.
 - Positioning: "open source today, hosted product coming." Hero CTA and `GetStartedCta` both link to the GitHub repo README.
 
 ### Next up
 - **Repo README.** The landing CTA terminates at `https://github.com/kevinle623/oncue#readme`. Lift the install runbook from `apps/api/AGENTS.md` into the README so a stranger can self-host in ~30 minutes. This is the bottleneck right now.
 - **Cold-clone test.** Run the README on a fresh machine, fix every doc gap.
 - **Audio demo on the hero.** 15-second clip embedded in `HeroVisual` or click-to-play.
-- **Hosted MVP scaffolding.** When ready, scaffold `(app)/` route group with Clerk middleware + a stub `(app)/dashboard/page.tsx`. Architecture decision is committed: same Next.js app, route groups, JWT-verified calls into `apps/api`. No new monorepo package.
+- **Pick an auth provider** (Clerk vs Supabase Auth vs Auth.js) and wire it into `(app)/` — middleware to gate the group, JWT verification dependency in `apps/api`. Architecture decision is committed: same Next.js app, route groups, JWT-verified calls into `apps/api`. No new monorepo package.
+- **First real screen content** once auth lands — dashboard "Connect Spotify" button (routes to existing `/v1/spotify/authorize?phone_number=…`) and call history list (reads `call_turn` rows via a new `GET /v1/calls` endpoint).
 
 ## Landing Page Messaging
 
