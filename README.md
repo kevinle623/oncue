@@ -161,7 +161,7 @@ bun run build
 
 ## Design
 
-Marketing mockups are generated via Google Stitch and stored under `apps/web/design-reference/stitch/` as a read-only reference. Translate them into idiomatic Next.js + shadcn/ui + Tailwind — don't ship the reference directly.
+Marketing and product mockups are generated via Claude Design and stored under `apps/web/design-reference/claude-design/` as a read-only reference. Translate them into idiomatic Next.js + shadcn/ui + Tailwind — don't ship the reference directly.
 
 ---
 

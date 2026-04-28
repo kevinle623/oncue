@@ -15,7 +15,7 @@ Twilio (telephony), Deepgram (STT), ElevenLabs (TTS), Anthropic (LLM + tool call
 
 ## Design Pipeline
 
-Google Stitch generates HTML mockups under `apps/web/design-reference/stitch/<folder>/`. Translate to idiomatic Next.js + shadcn/ui + Tailwind. Design reference is read-only, never shipped.
+Claude Design generates HTML mockups under `apps/web/design-reference/claude-design/<folder>/`. Translate to idiomatic Next.js + shadcn/ui + Tailwind. Design reference is read-only, never shipped. (Older `stitch/` folder is legacy from when Google Stitch was used; new designs go under `claude-design/`.)
 
 ## Direction
 
